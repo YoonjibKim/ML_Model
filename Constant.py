@@ -8,7 +8,7 @@ WRONG_CS_TS = 'Wrong_CS_TS'
 RANDOM_CS_ON = 'Random_CS_On'
 RANDOM_CS_OFF = 'Random_CS_Off'
 GAUSSIAN_ON = 'Guassian_On'
-GAUSSIAN_OFF = 'Gaussian_Off'
+GAUSSIAN_OFF = 'Gaussain_Off'
 
 CS_RECORD = 'cs_record'
 CS_STAT = 'cs_stat'
