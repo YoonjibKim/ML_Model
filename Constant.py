@@ -1,4 +1,5 @@
-ROOT_INPUT_DIR_NAME = 'input/dataset'
+ROOT_INPUT_DATASET_DIR_NAME = 'input/dataset'
+ROOT_OUTPUT_DATASET_DIR_NAME = 'output/dataset'
 
 CORRECT_EV_ID = 'Correct_ID'
 WRONG_EV_ID = 'Wrong_ID'

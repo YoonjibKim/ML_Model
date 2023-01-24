@@ -5,21 +5,37 @@ import Constant
 
 
 class Dataset:
-    __normal_time_diff = {}
-    __normal_gs_record_list = []
-    __normal_gs_stat_list = []
-    __normal_gs_top_list = []
-    __normal_cs_record_list = []
-    __normal_cs_stat_list = []
-    __normal_cs_top_list = []
+    __normal_time_diff_file = {}
+    __normal_time_diff_path = None
+    __normal_gs_record_file_list = []
+    __normal_gs_record_path = None
+    __normal_gs_stat_file_list = []
+    __normal_gs_stat_path_list = []
+    __normal_gs_top_file_list = []
+    __normal_gs_top_path_list = []
+    __normal_cs_record_file_list = []
+    __normal_cs_record_path_list = []
+    __normal_cs_stat_file_list = []
+    __normal_cs_stat_path_list = []
+    __normal_cs_top_file_list = []
+    __normal_cs_top_path_list = []
 
-    __attack_time_diff = {}
-    __attack_gs_record_list = []
-    __attack_gs_stat_list = []
-    __attack_gs_top_list = []
-    __attack_cs_record_list = []
-    __attack_cs_stat_list = []
-    __attack_cs_top_list = []
+    __attack_time_diff_file = {}
+    __attack_time_diff_path = None
+    __attack_gs_record_file_list = []
+    __attack_gs_record_path_list = []
+    __attack_gs_stat_file_list = []
+    __attack_gs_stat_path_list = []
+    __attack_gs_top_file_list = []
+    __attack_gs_top_path_list = []
+    __attack_cs_record_file_list = []
+    __attack_cs_record_path_list = []
+    __attack_cs_stat_file_list = []
+    __attack_cs_stat_path_list = []
+    __attack_cs_top_file_list = []
+    __attack_cs_top_path_list = []
+
+    __base_dir_path = None
 
     @classmethod
     def __get_file_names(cls, path):
@@ -96,7 +112,9 @@ class Dataset:
             cs_stat_file_list, cs_top_file_list
 
     def access_dataset(self, attack_scenario, random_cs, gaussian):
-        base_path = Constant.ROOT_INPUT_DIR_NAME + '/' + attack_scenario + '/' + random_cs + '/' + gaussian
+        self.__base_dir_path = Constant.ROOT_OUTPUT_DATASET_DIR_NAME + '/' + attack_scenario + '/' + random_cs + '/' + \
+                               gaussian
+        base_path = Constant.ROOT_INPUT_DATASET_DIR_NAME + '/' + attack_scenario + '/' + random_cs + '/' + gaussian
 
         attack_path = base_path + '/' + Constant.ATTACK
         attack_gs_record_path = attack_path + '/' + Constant.GS_RECORD
@@ -160,38 +178,52 @@ class Dataset:
         normal_cs_top_file_and_path_list = [normal_cs_top_path_list, normal_cs_top_list]
 
         gs_normal_record_list, gs_normal_stat_list, gs_normal_total_top_sec_measure_list, cs_normal_record_list, \
-            cs_normal_stat_list, cs_normal_total_top_sec_measure_list = \
-            self.__loading_data(normal_gs_record_list, normal_gs_stat_list, normal_gs_top_file_and_path_list,
-                                normal_cs_record_list, normal_cs_stat_list, normal_cs_top_file_and_path_list)
+            cs_normal_stat_list, cs_normal_total_top_sec_measure_list, cs_normal_total_top_sec_measure_path_list \
+            = self.__loading_data(normal_gs_record_list, normal_gs_stat_list, normal_gs_top_file_and_path_list,
+                                  normal_cs_record_list, normal_cs_stat_list, normal_cs_top_file_and_path_list)
 
         attack_gs_top_file_and_path_list = [attack_gs_top_path_list, attack_gs_top_list]
         attack_cs_top_file_and_path_list = [attack_cs_top_path_list, attack_cs_top_list]
 
         gs_attack_record_list, gs_attack_stat_list, gs_attack_total_top_sec_measure_list, cs_attack_record_list, \
-            cs_attack_stat_list, cs_attack_total_top_sec_measure_list = \
+            cs_attack_stat_list, cs_attack_total_top_sec_measure_list, cs_attack_total_top_sec_measure_path_list = \
             self.__loading_data(attack_gs_record_list, attack_gs_stat_list, attack_gs_top_file_and_path_list,
                                 attack_cs_record_list, attack_cs_stat_list, attack_cs_top_file_and_path_list)
 
-        self.__normal_time_diff = copy.deepcopy(normal_time_diff)
-        self.__normal_gs_record_list = copy.deepcopy(gs_normal_record_list)
-        self.__normal_gs_top_list = copy.deepcopy(gs_normal_total_top_sec_measure_list)
-        self.__normal_gs_stat_list = copy.deepcopy(gs_normal_stat_list)
-        self.__normal_cs_record_list = copy.deepcopy(cs_normal_record_list)
-        self.__normal_cs_top_list = copy.deepcopy(cs_normal_total_top_sec_measure_list)
-        self.__normal_cs_stat_list = copy.deepcopy(cs_normal_stat_list)
+        self.__normal_time_diff_file = copy.deepcopy(normal_time_diff)
+        self.__normal_gs_record_file_list = copy.deepcopy(gs_normal_record_list)
+        self.__normal_gs_top_file_list = copy.deepcopy(gs_normal_total_top_sec_measure_list)
+        self.__normal_gs_stat_file_list = copy.deepcopy(gs_normal_stat_list)
+        self.__normal_cs_record_file_list = copy.deepcopy(cs_normal_record_list)
+        self.__normal_cs_top_file_list = copy.deepcopy(cs_normal_total_top_sec_measure_list)
+        self.__normal_cs_stat_file_list = copy.deepcopy(cs_normal_stat_list)
 
-        self.__attack_time_diff = copy.deepcopy(attack_time_diff)
-        self.__attack_gs_record_list = copy.deepcopy(gs_attack_record_list)
-        self.__attack_gs_top_list = copy.deepcopy(gs_attack_total_top_sec_measure_list)
-        self.__attack_gs_stat_list = copy.deepcopy(gs_attack_stat_list)
-        self.__attack_cs_record_list = copy.deepcopy(cs_attack_record_list)
-        self.__attack_cs_top_list = copy.deepcopy(cs_attack_total_top_sec_measure_list)
-        self.__attack_cs_stat_list = copy.deepcopy(cs_attack_stat_list)
+        self.__attack_time_diff_file = copy.deepcopy(attack_time_diff)
+        self.__attack_gs_record_file_list = copy.deepcopy(gs_attack_record_list)
+        self.__attack_gs_top_file_list = copy.deepcopy(gs_attack_total_top_sec_measure_list)
+        self.__attack_gs_stat_file_list = copy.deepcopy(gs_attack_stat_list)
+        self.__attack_cs_record_file_list = copy.deepcopy(cs_attack_record_list)
+        self.__attack_cs_top_file_list = copy.deepcopy(cs_attack_total_top_sec_measure_list)
+        self.__attack_cs_stat_file_list = copy.deepcopy(cs_attack_stat_list)
 
-        print('test')
+        self.__normal_time_diff_path = normal_time_diff_path
+        self.__normal_gs_record_path = normal_gs_record_path
+        self.__normal_gs_top_path_list = normal_gs_top_path_list
+        self.__normal_gs_stat_path_list = normal_gs_stat_path_list
+        self.__normal_cs_record_path_list = normal_cs_record_path_list
+        self.__normal_cs_top_path_list = cs_normal_total_top_sec_measure_path_list
+        self.__normal_cs_stat_path_list = normal_cs_stat_path_list
+
+        self.__attack_time_diff_path = attack_time_diff_path
+        self.__attack_gs_record_path_list = attack_gs_record_path
+        self.__attack_gs_top_path_list = attack_gs_top_path_list
+        self.__attack_gs_stat_path_list = attack_gs_stat_path_list
+        self.__attack_cs_record_path_list = attack_cs_record_path_list
+        self.__attack_cs_top_path_list = cs_attack_total_top_sec_measure_path_list
+        self.__attack_cs_stat_path_list = attack_cs_stat_path_list
 
     @classmethod
-    def __get_gs_top_file(cls, top_file_and_path_list):
+    def __get_top_file(cls, top_file_and_path_list):
         path_list = top_file_and_path_list[0]
         file_list = top_file_and_path_list[1]
         top_cycle_sec_measure_list = []
@@ -237,6 +269,7 @@ class Dataset:
                                 shallow_list.clear()
         total_top_sec_measure_list = [top_cycle_sec_measure_list, top_inst_sec_measure_list,
                                       top_branch_sec_measure_list]
+
         return copy.deepcopy(total_top_sec_measure_list)
 
     def __loading_data(self, gs_record_list, gs_stat_list, gs_top_file_and_path_list, cs_record_list,
@@ -294,11 +327,11 @@ class Dataset:
                             elif 'instructions' in temp_gs_stat_list:
                                 counts = temp_gs_stat_list[1]
                                 gs_stat_instruction_list.append(counts)
-                            elif 'branches' in temp_gs_stat_list:
+                            elif 'branches' in temp_gs_stat_list and 'branch-misses' not in temp_gs_stat_list:
                                 counts = temp_gs_stat_list[1]
                                 gs_stat_branch_list.append(counts)
 
-        gs_total_top_sec_measure_list = self.__get_gs_top_file(gs_top_file_and_path_list)
+        gs_total_top_sec_measure_list = self.__get_top_file(gs_top_file_and_path_list)
 
         _cs_record_list = []
         for cs_record_sub_list in cs_record_list:
@@ -398,8 +431,10 @@ class Dataset:
             cs_each_top_list.append(cs_total_top_list)
 
         cs_total_top_sec_measure_list = []
+        cs_total_top_sec_measure_path_list = []
         for cs_top_list in cs_each_top_list:
-            cs_top_sec_measure_list = self.__get_gs_top_file(cs_top_list)
+            cs_total_top_sec_measure_path_list.append(cs_top_list[0])
+            cs_top_sec_measure_list = self.__get_top_file(cs_top_list)
             cs_total_top_sec_measure_list.append(cs_top_sec_measure_list)
 
         ret_gs_record_list = [gs_record_cycle_list, gs_record_instructions_list, gs_record_branch_list]
@@ -407,4 +442,92 @@ class Dataset:
 
         return copy.deepcopy(ret_gs_record_list), copy.deepcopy(ret_gs_stat_list), \
             copy.deepcopy(gs_total_top_sec_measure_list), copy.deepcopy(_cs_record_list), \
-            copy.deepcopy(_cs_stat_list), copy.deepcopy(cs_total_top_sec_measure_list)
+            copy.deepcopy(_cs_stat_list), copy.deepcopy(cs_total_top_sec_measure_list), \
+            copy.deepcopy(cs_total_top_sec_measure_path_list)
+
+    def get_normal_time_diff_file(self):
+        return self.__normal_time_diff_file
+
+    def get_normal_time_diff_path(self):
+        return self.__normal_time_diff_path
+
+    def get_normal_gs_record_file_list(self):
+        return self.__normal_gs_record_file_list
+
+    def get_normal_gs_record_path(self):
+        return self.__normal_gs_record_path
+
+    def get_normal_gs_stat_file_list(self):
+        return self.__normal_gs_stat_file_list
+
+    def get_normal_gs_stat_path_list(self):
+        return self.__normal_gs_stat_path_list
+
+    def get_normal_gs_top_file_list(self):
+        return self.__normal_gs_top_file_list
+
+    def get_normal_gs_top_path_list(self):
+        return self.__normal_gs_top_path_list
+
+    def get_normal_cs_record_file_list(self):
+        return self.__normal_cs_record_file_list
+
+    def get_normal_cs_record_path_list(self):
+        return self.__normal_cs_record_path_list
+
+    def get_normal_cs_stat_file_list(self):
+        return self.__normal_cs_stat_file_list
+
+    def get_normal_cs_stat_path_list(self):
+        return self.__normal_cs_stat_path_list
+
+    def get_normal_cs_top_file_list(self):
+        return self.__normal_cs_top_file_list
+
+    def get_normal_cs_top_path_list(self):
+        return self.__normal_cs_top_path_list
+
+    def get_attack_time_diff_file(self):
+        return self.__attack_time_diff_file
+
+    def get_attack_time_diff_path(self):
+        return self.__attack_time_diff_path
+
+    def get_attack_gs_record_file_list(self):
+        return self.__attack_gs_record_file_list
+
+    def get_attack_gs_record_path_list(self):
+        return self.__attack_gs_record_path_list
+
+    def get_attack_gs_stat_file_list(self):
+        return self.__attack_gs_stat_file_list
+
+    def get_attack_gs_stat_path_list(self):
+        return self.__attack_gs_stat_path_list
+
+    def get_attack_gs_top_file_list(self):
+        return self.__attack_gs_top_file_list
+
+    def get_attack_gs_top_path_list(self):
+        return self.__attack_gs_top_path_list
+
+    def get_attack_cs_record_file_list(self):
+        return self.__attack_cs_record_file_list
+
+    def get_attack_cs_record_path_list(self):
+        return self.__attack_cs_record_path_list
+
+    def get_attack_cs_stat_file_list(self):
+        return self.__attack_cs_stat_file_list
+
+    def get_attack_cs_stat_path_list(self):
+        return self.__attack_cs_stat_path_list
+
+    def get_attack_cs_top_file_list(self):
+        return self.__attack_cs_top_file_list
+
+    def get_attack_cs_top_path_list(self):
+        return self.__attack_cs_top_path_list
+
+    def get_base_dir_path(self):
+        return self.__base_dir_path
