@@ -128,6 +128,26 @@ class DataSave:
 
         normal_cs_stat_file_list = dataset.get_normal_cs_stat_file_list()
         normal_cs_stat_path = dataset.get_normal_cs_stat_path_list()
-        for i in normal_cs_stat_file_list:
-            print(i)
+        for index_i, file_name in enumerate(normal_cs_stat_path):
+            temp_file_name_list = file_name.split('/')
+            _file_name = temp_file_name_list[len(temp_file_name_list) - 1]
+            for index_j, file in enumerate(normal_cs_stat_file_list[index_i]):
+                sequence = list_sequence[index_j]
+                __file_name = _file_name.replace('perf_stat_', 'cs_perf_stat_' + sequence + '_')
+                save_path = save_normal_path + '/' + __file_name
+                with open(save_path, 'w', newline='') as fd:
+                    for record in file:
+                        fd.write(record + '\n')
 
+        attack_cs_stat_file_list = dataset.get_attack_cs_stat_file_list()
+        attack_cs_stat_path = dataset.get_attack_cs_stat_path_list()
+        for index_i, file_name in enumerate(attack_cs_stat_path):
+            temp_file_name_list = file_name.split('/')
+            _file_name = temp_file_name_list[len(temp_file_name_list) - 1]
+            for index_j, file in enumerate(attack_cs_stat_file_list[index_i]):
+                sequence = list_sequence[index_j]
+                __file_name = _file_name.replace('perf_stat_', 'cs_perf_stat_' + sequence + '_')
+                save_path = save_attack_path + '/' + __file_name
+                with open(save_path, 'w', newline='') as fd:
+                    for record in file:
+                        fd.write(record + '\n')
