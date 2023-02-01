@@ -96,13 +96,13 @@ class DataSave:
         normal_cs_file_name_list = []
         for normal_cs_record_path in normal_cs_record_path_list:
             temp_list = normal_cs_record_path.split('/')
-            file_name = temp_list[len(temp_list) - 1]
-            normal_cs_file_name_list.append(file_name)
+            file_path = temp_list[len(temp_list) - 1]
+            normal_cs_file_name_list.append(file_path)
 
         normal_cs_record_file_list = dataset.get_normal_cs_record_file_list()
-        for index_i, file_name in enumerate(normal_cs_file_name_list):
+        for index_i, file_path in enumerate(normal_cs_file_name_list):
             for index_j, normal_cs_record_file in enumerate(normal_cs_record_file_list[index_i]):
-                _file_name = file_name.replace('perf_record', 'cs_record_' + list_sequence[index_j])
+                _file_name = file_path.replace('perf_record', 'cs_record_' + list_sequence[index_j])
                 _file_name = _file_name.replace('.txt', '.csv')
                 save_path = save_normal_path + '/' + _file_name
                 with open(save_path, 'w', newline='') as fd:
@@ -113,13 +113,13 @@ class DataSave:
         attack_cs_file_name_list = []
         for attack_cs_record_path in attack_cs_record_path_list:
             temp_list = attack_cs_record_path.split('/')
-            file_name = temp_list[len(temp_list) - 1]
-            attack_cs_file_name_list.append(file_name)
+            file_path = temp_list[len(temp_list) - 1]
+            attack_cs_file_name_list.append(file_path)
 
         attack_cs_record_file_list = dataset.get_attack_cs_record_file_list()
-        for index_i, file_name in enumerate(attack_cs_file_name_list):
+        for index_i, file_path in enumerate(attack_cs_file_name_list):
             for index_j, attack_cs_record_file in enumerate(attack_cs_record_file_list[index_i]):
-                _file_name = file_name.replace('perf_record', 'cs_record_' + list_sequence[index_j])
+                _file_name = file_path.replace('perf_record', 'cs_record_' + list_sequence[index_j])
                 _file_name = _file_name.replace('.txt', '.csv')
                 save_path = save_attack_path + '/' + _file_name
                 with open(save_path, 'w', newline='') as fd:
@@ -127,27 +127,95 @@ class DataSave:
                     writer.writerows(attack_cs_record_file)
 
         normal_cs_stat_file_list = dataset.get_normal_cs_stat_file_list()
-        normal_cs_stat_path = dataset.get_normal_cs_stat_path_list()
-        for index_i, file_name in enumerate(normal_cs_stat_path):
-            temp_file_name_list = file_name.split('/')
+        normal_cs_stat_path_list = dataset.get_normal_cs_stat_path_list()
+        for index_i, file_path in enumerate(normal_cs_stat_path_list):
+            temp_file_name_list = file_path.split('/')
             _file_name = temp_file_name_list[len(temp_file_name_list) - 1]
             for index_j, file in enumerate(normal_cs_stat_file_list[index_i]):
                 sequence = list_sequence[index_j]
-                __file_name = _file_name.replace('perf_stat_', 'cs_perf_stat_' + sequence + '_')
+                __file_name = _file_name.replace('perf_stat_', 'cs_stat_' + sequence + '_')
                 save_path = save_normal_path + '/' + __file_name
                 with open(save_path, 'w', newline='') as fd:
                     for record in file:
                         fd.write(record + '\n')
 
         attack_cs_stat_file_list = dataset.get_attack_cs_stat_file_list()
-        attack_cs_stat_path = dataset.get_attack_cs_stat_path_list()
-        for index_i, file_name in enumerate(attack_cs_stat_path):
-            temp_file_name_list = file_name.split('/')
+        attack_cs_stat_path_list = dataset.get_attack_cs_stat_path_list()
+        for index_i, file_path in enumerate(attack_cs_stat_path_list):
+            temp_file_name_list = file_path.split('/')
             _file_name = temp_file_name_list[len(temp_file_name_list) - 1]
             for index_j, file in enumerate(attack_cs_stat_file_list[index_i]):
                 sequence = list_sequence[index_j]
-                __file_name = _file_name.replace('perf_stat_', 'cs_perf_stat_' + sequence + '_')
+                __file_name = _file_name.replace('perf_stat_', 'cs_stat_' + sequence + '_')
                 save_path = save_attack_path + '/' + __file_name
                 with open(save_path, 'w', newline='') as fd:
                     for record in file:
                         fd.write(record + '\n')
+
+        normal_cs_top_file_list = dataset.get_normal_cs_top_file_list()
+        normal_cs_top_path_list = dataset.get_normal_cs_top_path_list()
+        for index_i, file_path_list in enumerate(normal_cs_top_path_list):
+            for index_j, file_path in enumerate(file_path_list):
+                temp_file_name_list = file_path.split('/')
+                _file_name = temp_file_name_list[len(temp_file_name_list) - 1]
+                __file_name = _file_name.replace('perf_top', 'cs_top')
+                save_path = save_normal_path + '/' + __file_name
+                data_list = normal_cs_top_file_list[index_i][index_j]
+                symbol_name_list = []
+                organized_record_list = []
+                for record_list in data_list:
+                    for record in record_list:
+                        symbol_name = record.split()[1]
+                        symbol_name_list.append(symbol_name)
+                        organized_record_list.append(record.split())
+
+                unique_symbol_name_list = list(set(symbol_name_list))
+                symbol_name_overhead_dict = {}
+                for symbol_name in unique_symbol_name_list:
+                    temp_list = []
+                    for record in organized_record_list:
+                        if symbol_name in record:
+                            temp_list.append(record[0])
+                    symbol_name_overhead_dict[symbol_name] = temp_list
+
+                with open(save_path, 'w', newline='') as f:
+                    for symbol_name, overhead_list in symbol_name_overhead_dict.items():
+                        f.write(symbol_name + ' ')
+                        for overhead in overhead_list:
+                            overhead = overhead[:-1]
+                            f.write(overhead + ' ')
+                        f.write('\n')
+
+        attack_cs_top_file_list = dataset.get_attack_cs_top_file_list()
+        attack_cs_top_path_list = dataset.get_attack_cs_top_path_list()
+        for index_i, file_path_list in enumerate(attack_cs_top_path_list):
+            for index_j, file_path in enumerate(file_path_list):
+                temp_file_name_list = file_path.split('/')
+                _file_name = temp_file_name_list[len(temp_file_name_list) - 1]
+                __file_name = _file_name.replace('perf_top', 'cs_top')
+                save_path = save_attack_path + '/' + __file_name
+                data_list = attack_cs_top_file_list[index_i][index_j]
+                symbol_name_list = []
+                organized_record_list = []
+                for record_list in data_list:
+                    for record in record_list:
+                        symbol_name = record.split()[1]
+                        symbol_name_list.append(symbol_name)
+                        organized_record_list.append(record.split())
+
+                unique_symbol_name_list = list(set(symbol_name_list))
+                symbol_name_overhead_dict = {}
+                for symbol_name in unique_symbol_name_list:
+                    temp_list = []
+                    for record in organized_record_list:
+                        if symbol_name in record:
+                            temp_list.append(record[0])
+                    symbol_name_overhead_dict[symbol_name] = temp_list
+
+                with open(save_path, 'w', newline='') as f:
+                    for symbol_name, overhead_list in symbol_name_overhead_dict.items():
+                        f.write(symbol_name + ' ')
+                        for overhead in overhead_list:
+                            overhead = overhead[:-1]
+                            f.write(overhead + ' ')
+                        f.write('\n')

@@ -387,7 +387,7 @@ class Dataset:
                             elif 'instructions' in temp_cs_stat_list:
                                 counts = temp_cs_stat_list[1]
                                 cs_stat_instruction_list.append(counts)
-                            elif 'branches' in temp_cs_stat_list:
+                            elif 'branches' in temp_cs_stat_list and 'branch-misses' not in temp_cs_stat_list:
                                 counts = temp_cs_stat_list[1]
                                 cs_stat_branch_list.append(counts)
 
