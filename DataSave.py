@@ -23,6 +23,28 @@ class DataSave:
         return file_name
 
     @classmethod
+    def __get_cs_id_from_pid(cls, file_name, cs_pid_id_list, extension):
+        temp_list = file_name.split('_')
+        cs_pid_from_file_name = temp_list[len(temp_list) - 1]
+        cs_pid_from_file_name = cs_pid_from_file_name.split('.')
+        cs_pid_from_file_name = cs_pid_from_file_name[0]
+
+        cs_id = None
+
+        for record in cs_pid_id_list:
+            cs_pid = record[1]
+            if cs_pid_from_file_name == cs_pid:
+                cs_id = record[0]
+                break
+
+        new_file_name = ''
+        for temp in temp_list[:-1]:
+            new_file_name += temp
+            new_file_name += '_'
+
+        return new_file_name + cs_id + '.' + extension
+
+    @classmethod
     def save_gs_features_to_storage(cls, dataset):
         save_dir_path = dataset.get_base_dir_path()
         save_normal_path = save_dir_path + '/' + Constant.NORMAL
@@ -103,7 +125,8 @@ class DataSave:
         for index_i, file_path in enumerate(normal_cs_file_name_list):
             for index_j, normal_cs_record_file in enumerate(normal_cs_record_file_list[index_i]):
                 _file_name = file_path.replace('perf_record', 'cs_record_' + list_sequence[index_j])
-                _file_name = _file_name.replace('.txt', '.csv')
+                _file_name = cls.__get_cs_id_from_pid(_file_name, dataset.get_cs_id_pid_list(), 'csv')
+
                 save_path = save_normal_path + '/' + _file_name
                 with open(save_path, 'w', newline='') as fd:
                     writer = csv.writer(fd)
@@ -120,7 +143,7 @@ class DataSave:
         for index_i, file_path in enumerate(attack_cs_file_name_list):
             for index_j, attack_cs_record_file in enumerate(attack_cs_record_file_list[index_i]):
                 _file_name = file_path.replace('perf_record', 'cs_record_' + list_sequence[index_j])
-                _file_name = _file_name.replace('.txt', '.csv')
+                _file_name = cls.__get_cs_id_from_pid(_file_name, dataset.get_cs_id_pid_list(), 'csv')
                 save_path = save_attack_path + '/' + _file_name
                 with open(save_path, 'w', newline='') as fd:
                     writer = csv.writer(fd)
@@ -134,6 +157,7 @@ class DataSave:
             for index_j, file in enumerate(normal_cs_stat_file_list[index_i]):
                 sequence = list_sequence[index_j]
                 __file_name = _file_name.replace('perf_stat_', 'cs_stat_' + sequence + '_')
+                __file_name = cls.__get_cs_id_from_pid(__file_name, dataset.get_cs_id_pid_list(), 'txt')
                 save_path = save_normal_path + '/' + __file_name
                 with open(save_path, 'w', newline='') as fd:
                     for record in file:
@@ -147,6 +171,7 @@ class DataSave:
             for index_j, file in enumerate(attack_cs_stat_file_list[index_i]):
                 sequence = list_sequence[index_j]
                 __file_name = _file_name.replace('perf_stat_', 'cs_stat_' + sequence + '_')
+                __file_name = cls.__get_cs_id_from_pid(__file_name, dataset.get_cs_id_pid_list(), 'txt')
                 save_path = save_attack_path + '/' + __file_name
                 with open(save_path, 'w', newline='') as fd:
                     for record in file:
@@ -159,6 +184,7 @@ class DataSave:
                 temp_file_name_list = file_path.split('/')
                 _file_name = temp_file_name_list[len(temp_file_name_list) - 1]
                 __file_name = _file_name.replace('perf_top', 'cs_top')
+                __file_name = cls.__get_cs_id_from_pid(__file_name, dataset.get_cs_id_pid_list(), 'txt')
                 save_path = save_normal_path + '/' + __file_name
                 data_list = normal_cs_top_file_list[index_i][index_j]
                 symbol_name_list = []
@@ -193,6 +219,7 @@ class DataSave:
                 temp_file_name_list = file_path.split('/')
                 _file_name = temp_file_name_list[len(temp_file_name_list) - 1]
                 __file_name = _file_name.replace('perf_top', 'cs_top')
+                __file_name = cls.__get_cs_id_from_pid(__file_name, dataset.get_cs_id_pid_list(), 'txt')
                 save_path = save_attack_path + '/' + __file_name
                 data_list = attack_cs_top_file_list[index_i][index_j]
                 symbol_name_list = []

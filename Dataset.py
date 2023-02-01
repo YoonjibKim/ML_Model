@@ -1,4 +1,5 @@
 import copy
+import csv
 import json
 import os
 import Constant
@@ -19,6 +20,7 @@ class Dataset:
     __normal_cs_stat_path_list = []
     __normal_cs_top_file_list = []
     __normal_cs_top_path_list = []
+    __normal_cs_id_pid_list = []
 
     __attack_time_diff_file = {}
     __attack_time_diff_path = None
@@ -34,6 +36,7 @@ class Dataset:
     __attack_cs_stat_path_list = []
     __attack_cs_top_file_list = []
     __attack_cs_top_path_list = []
+    __attack_cs_id_pid_list = []
 
     __base_dir_path = None
 
@@ -66,6 +69,16 @@ class Dataset:
         return data_dict
 
     @classmethod
+    def __read_csv(cls, path):
+        read_line = []
+        with open(path, 'r') as f:
+            rdr = csv.reader(f)
+            for line in rdr:
+                read_line.append(line)
+
+        return read_line
+
+    @classmethod
     def __generate_full_path(cls, _dir, file_name_list):
         full_path_list = []
         for file_name in file_name_list:
@@ -76,7 +89,7 @@ class Dataset:
 
     @classmethod
     def __read_files(cls, time_diff_path, gs_record_path_list, gs_stat_path_list, gs_top_path_list,
-                     cs_record_path_list, cs_stat_path_list, cs_top_path_list):
+                     cs_record_path_list, cs_stat_path_list, cs_top_path_list, cs_id_pid_path):
         time_diff_file = cls.__read_json_data(time_diff_path)
         gs_record_file_list = []
         for gs_record_path in gs_record_path_list:
@@ -108,8 +121,10 @@ class Dataset:
             cs_top_file = cls.__read_txt_data(cs_top_path)
             cs_top_file_list.append(cs_top_file)
 
+        cs_id_pid_list = cls.__read_csv(cs_id_pid_path)
+
         return time_diff_file, gs_record_file_list, gs_stat_file_list, gs_top_file_list, cs_record_file_list, \
-            cs_stat_file_list, cs_top_file_list
+            cs_stat_file_list, cs_top_file_list, cs_id_pid_list
 
     def access_dataset(self, attack_scenario, random_cs, gaussian):
         self.__base_dir_path = Constant.ROOT_OUTPUT_DATASET_DIR_NAME + '/' + attack_scenario + '/' + random_cs + '/' + \
@@ -132,6 +147,7 @@ class Dataset:
         attack_cs_top_file_name_list = self.__get_file_names(attack_cs_top_path)
 
         attack_time_diff_path = attack_path + '/' + 'attack_time_diff.txt'
+        attack_cs_id_pid_path = attack_path + '/' + 'cs_id_pid.csv'
         attack_gs_record_path_list = self.__generate_full_path(attack_gs_record_path, attack_gs_record_file_name_list)
         attack_gs_stat_path_list = self.__generate_full_path(attack_gs_stat_path, attack_gs_stat_file_name_list)
         attack_gs_top_path_list = self.__generate_full_path(attack_gs_top_path, attack_gs_top_file_name_list)
@@ -155,6 +171,7 @@ class Dataset:
         normal_cs_top_file_name_list = self.__get_file_names(normal_cs_top_path)
 
         normal_time_diff_path = normal_path + '/' + 'normal_time_diff.txt'
+        normal_cs_id_pid_path = normal_path + '/' + 'cs_id_pid.csv'
         normal_gs_record_path_list = self.__generate_full_path(normal_gs_record_path, normal_gs_record_file_name_list)
         normal_gs_stat_path_list = self.__generate_full_path(normal_gs_stat_path, normal_gs_stat_file_name_list)
         normal_gs_top_path_list = self.__generate_full_path(normal_gs_top_path, normal_gs_top_file_name_list)
@@ -163,16 +180,16 @@ class Dataset:
         normal_cs_top_path_list = self.__generate_full_path(normal_cs_top_path, normal_cs_top_file_name_list)
 
         normal_time_diff, normal_gs_record_list, normal_gs_stat_list, normal_gs_top_list, normal_cs_record_list, \
-            normal_cs_stat_list, normal_cs_top_list = \
+            normal_cs_stat_list, normal_cs_top_list, normal_cs_id_pid_list = \
             self.__read_files(normal_time_diff_path, normal_gs_record_path_list, normal_gs_stat_path_list,
                               normal_gs_top_path_list, normal_cs_record_path_list, normal_cs_stat_path_list,
-                              normal_cs_top_path_list)
+                              normal_cs_top_path_list, normal_cs_id_pid_path)
 
         attack_time_diff, attack_gs_record_list, attack_gs_stat_list, attack_gs_top_list, attack_cs_record_list, \
-            attack_cs_stat_list, attack_cs_top_list = \
+            attack_cs_stat_list, attack_cs_top_list, attack_cs_id_pid_list = \
             self.__read_files(attack_time_diff_path, attack_gs_record_path_list, attack_gs_stat_path_list,
                               attack_gs_top_path_list, attack_cs_record_path_list, attack_cs_stat_path_list,
-                              attack_cs_top_path_list)
+                              attack_cs_top_path_list, attack_cs_id_pid_path)
 
         normal_gs_top_file_and_path_list = [normal_gs_top_path_list, normal_gs_top_list]
         normal_cs_top_file_and_path_list = [normal_cs_top_path_list, normal_cs_top_list]
@@ -221,6 +238,9 @@ class Dataset:
         self.__attack_cs_record_path_list = attack_cs_record_path_list
         self.__attack_cs_top_path_list = cs_attack_total_top_sec_measure_path_list
         self.__attack_cs_stat_path_list = attack_cs_stat_path_list
+
+        self.__normal_cs_id_pid_list = normal_cs_id_pid_list
+        self.__attack_cs_id_pid_list = attack_cs_id_pid_list
 
     @classmethod
     def __get_top_file(cls, top_file_and_path_list):
@@ -531,3 +551,7 @@ class Dataset:
 
     def get_base_dir_path(self):
         return self.__base_dir_path
+
+    def get_cs_id_pid_list(self):
+        self.__normal_cs_id_pid_list.extend(self.__attack_cs_id_pid_list)
+        return self.__normal_cs_id_pid_list
