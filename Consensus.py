@@ -45,7 +45,7 @@ class Consensus(KNN):
                     round_percent_diff = round(percent_diff, 3)
                     percent_list.append([round_percent_diff, normal_symbol_name])
 
-        sorted(percent_list, key=lambda percent_list: percent_list[0], reverse=True)
+        percent_list = sorted(percent_list, key=lambda _percent_list: _percent_list[0], reverse=False)
         print(percent_list)
 
     def __get_large_overhead(self, normal_path_list, attack_path_list):
