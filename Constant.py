@@ -1,5 +1,5 @@
-ROOT_INPUT_DATASET_DIR_NAME = 'input/dataset'
-ROOT_OUTPUT_DATASET_DIR_NAME = 'output/dataset'
+ROOT_INPUT_DATASET_DIR_NAME = 'Before_parsing_dataset/dataset'
+ROOT_OUTPUT_DATASET_DIR_NAME = 'After_parsing_dataset/dataset'
 
 CORRECT_EV_ID = 'Correct_ID'
 WRONG_EV_ID = 'Wrong_ID'
@@ -21,3 +21,5 @@ GS_TOP = 'gs_top'
 
 NORMAL = 'Normal'
 ATTACK = 'Attack'
+
+LIST_SEQUENCE = ['cycles', 'instructions', 'branch']

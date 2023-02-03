@@ -62,27 +62,26 @@ class DataSave:
         with open(file_path, 'w') as fd:
             json.dump(dataset.get_attack_time_diff_file(), fd)
 
-        list_sequence = ['cycles', 'instructions', 'branch']
         for index, file_list in enumerate(dataset.get_normal_gs_record_file_list()):
-            save_path = save_normal_path + '/gs_record_' + list_sequence[index] + '.csv'
+            save_path = save_normal_path + '/gs_record_' + Constant.LIST_SEQUENCE[index] + '.csv'
             with open(save_path, 'w', newline='') as fd:
                 writer = csv.writer(fd)
                 writer.writerows(file_list)
 
         for index, file_list in enumerate(dataset.get_attack_gs_record_file_list()):
-            save_path = save_attack_path + '/gs_record_' + list_sequence[index] + '.csv'
+            save_path = save_attack_path + '/gs_record_' + Constant.LIST_SEQUENCE[index] + '.csv'
             with open(save_path, 'w', newline='') as fd:
                 writer = csv.writer(fd)
                 writer.writerows(file_list)
 
         for index, file_list in enumerate(dataset.get_normal_gs_stat_file_list()):
-            save_path = save_normal_path + '/gs_stat_' + list_sequence[index] + '.txt'
+            save_path = save_normal_path + '/gs_stat_' + Constant.LIST_SEQUENCE[index] + '.txt'
             with open(save_path, 'w', newline='') as fd:
                 for record in file_list:
                     fd.write(record + '\n')
 
         for index, file_list in enumerate(dataset.get_attack_gs_stat_file_list()):
-            save_path = save_attack_path + '/gs_stat_' + list_sequence[index] + '.txt'
+            save_path = save_attack_path + '/gs_stat_' + Constant.LIST_SEQUENCE[index] + '.txt'
             with open(save_path, 'w', newline='') as fd:
                 for record in file_list:
                     fd.write(record + '\n')
@@ -90,7 +89,7 @@ class DataSave:
         file_list = dataset.get_normal_gs_top_file_list()
         normal_gs_top_path_list = dataset.get_normal_gs_top_path_list()
         for index, path in enumerate(normal_gs_top_path_list):
-            save_path = save_normal_path + '/gs_top_' + list_sequence[index] + '.csv'
+            save_path = save_normal_path + '/gs_top_' + Constant.LIST_SEQUENCE[index] + '.csv'
             with open(save_path, 'w', newline='') as fd:
                 writer = csv.writer(fd)
                 for record in file_list[index]:
@@ -99,7 +98,7 @@ class DataSave:
         file_list = dataset.get_attack_gs_top_file_list()
         attack_gs_top_path_list = dataset.get_attack_gs_top_path_list()
         for index, path in enumerate(attack_gs_top_path_list):
-            save_path = save_attack_path + '/gs_top_' + list_sequence[index] + '.csv'
+            save_path = save_attack_path + '/gs_top_' + Constant.LIST_SEQUENCE[index] + '.csv'
             with open(save_path, 'w', newline='') as fd:
                 writer = csv.writer(fd)
                 for record in file_list[index]:
