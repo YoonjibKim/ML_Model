@@ -245,3 +245,38 @@ class DataSave:
                             overhead = overhead[:-1]
                             f.write(overhead + ' ')
                         f.write('\n')
+
+    @classmethod
+    def save_profiling_data(cls, gs_stat_diff_list, cs_stat_diff_list, gs_record_diff_list, cs_record_diff_list,
+                            gs_record_diff_mean_std, cs_record_diff_mean_std):
+        with open('./Output_results/mean_std_diff.csv', 'w') as f:
+            wr = csv.writer(f)
+            wr.writerow(['gs arithmetic mean & gs std', 'type'])
+            wr.writerows(gs_record_diff_mean_std)
+            wr.writerows(['\n'])
+            wr.writerow(['cs arithmetic mean & cs std', 'type'])
+            wr.writerows(cs_record_diff_mean_std)
+
+        with open('./Output_results/stat_diff.csv', 'w') as f:
+            wr = csv.writer(f)
+            wr.writerow(['gs stat diff'])
+            wr.writerows(gs_stat_diff_list)
+            wr.writerow(['\n'])
+            wr.writerow(['cs stat diff'])
+            wr.writerows(cs_stat_diff_list)
+
+        with open('./Output_results/gs_record_diff.csv', 'w') as f:
+            wr = csv.writer(f)
+            for sequence, gs_record_diff in zip(Constant.LIST_SEQUENCE, gs_record_diff_list):
+                wr.writerow([sequence])
+                wr.writerow(['overhead', 'symbol'])
+                wr.writerows(gs_record_diff)
+                wr.writerow('\n')
+
+        with open('./Output_results/cs_record_diff.csv', 'w') as f:
+            wr = csv.writer(f)
+            for sequence, cs_record_diff in zip(Constant.LIST_SEQUENCE, cs_record_diff_list):
+                wr.writerow([sequence])
+                wr.writerow(['overhead', 'symbol'])
+                wr.writerows(cs_record_diff)
+                wr.writerow('\n')

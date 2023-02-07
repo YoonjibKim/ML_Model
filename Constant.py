@@ -23,3 +23,4 @@ NORMAL = 'Normal'
 ATTACK = 'Attack'
 
 LIST_SEQUENCE = ['cycles', 'instructions', 'branch']
+

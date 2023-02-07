@@ -10,4 +10,7 @@ if __name__ == '__main__':
     DataSave.save_cs_features_to_storage(dataset)
 
     consensus = Consensus()
-    consensus.load_dataset(dataset.get_base_dir_path())
+    consensus.parsing_dataset(dataset.get_base_dir_path())
+    consensus.load_data()
+
+
