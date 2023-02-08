@@ -350,10 +350,52 @@ class Consensus(KNN):
             for record in data_list:
                 temp_list = record.split()
                 symbol_name = temp_list[0]
-                if chosen_symbol == symbol_name:
-                    print(temp_list)
+                # if chosen_symbol == symbol_name:
+                #     print(temp_list)
+
+    @classmethod
+    def __get_head_symbol(cls, data_list):
+        temp_list = []
+        for data in data_list:
+            split_list = data.split()
+            temp_list.append(split_list[0])
+
+        return temp_list
+
+    def __get_unique_cs_top_symbol(self, file_path):
+        file_list = self.__get_file_list_in_dir(file_path)
+        cycles_list = []
+        instructions_list = []
+        branch_list = []
+        for file in file_list:
+            if file.find(Constant.CS_TOP) > 0:
+                if file.find(Constant.LIST_SEQUENCE[0]) > 0:
+                    data = self.__read_str_txt(file)
+                    symbol = self.__get_head_symbol(data)
+                    cycles_list.extend(symbol)
+                elif file.find(Constant.LIST_SEQUENCE[1]) > 0:
+                    data = self.__read_str_txt(file)
+                    symbol = self.__get_head_symbol(data)
+                    instructions_list.extend(symbol)
+                elif file.find(Constant.LIST_SEQUENCE[2]) > 0:
+                    data = self.__read_str_txt(file)
+                    symbol = self.__get_head_symbol(data)
+                    branch_list.extend(symbol)
+
+        return list(set(cycles_list)), list(set(instructions_list)), list(set(branch_list))
+
+    @classmethod
+    def __get_cs_top_symbol_intersection(cls, normal_data_list, attack_data_list):
+        print(normal_data_list)
 
     def __get_cs_top_data(self, chosen_record_diff_list):
+        normal_cycles_list, normal_instructions_list, normal_branch_list = \
+            self.__get_unique_cs_top_symbol(self.__normal_path)
+        attack_cycles_list, attack_instructions_list, attack_branch_list = \
+            self.__get_unique_cs_top_symbol(self.__attack_path)
+
+        self.__get_cs_top_symbol_intersection(normal_cycles_list, attack_cycles_list)
+
         normal_cs_path_list = self.__get_file_list_in_dir(self.__normal_path)
         unique_normal_cs_id_list = self.__get_unique_cs_id(normal_cs_path_list)
         normal_cs_top_feature_dict = {}
@@ -363,15 +405,15 @@ class Consensus(KNN):
                 for unique_normal_cs_id in unique_normal_cs_id_list:
                     if normal_cs_path.find(unique_normal_cs_id) > 0:
                         if normal_cs_path.find(Constant.LIST_SEQUENCE[0]) > 0:  # cycles
-                            print(unique_normal_cs_id, normal_cs_path)
+                            # print(unique_normal_cs_id, normal_cs_path)
                             data = self.__read_str_txt(normal_cs_path)
                             self.__get_chosen_feature_data(data, chosen_record_diff_list)
                         elif normal_cs_path.find(Constant.LIST_SEQUENCE[1]) > 0:  # instructions
-                            print(unique_normal_cs_id, normal_cs_path)
+                            # print(unique_normal_cs_id, normal_cs_path)
                             data = self.__read_str_txt(normal_cs_path)
                             self.__get_chosen_feature_data(data, chosen_record_diff_list)
                         elif normal_cs_path.find(Constant.LIST_SEQUENCE[2]) > 0:  # branch
-                            print(unique_normal_cs_id, normal_cs_path)
+                            # print(unique_normal_cs_id, normal_cs_path)
                             data = self.__read_str_txt(normal_cs_path)
                             self.__get_chosen_feature_data(data, chosen_record_diff_list)
 
