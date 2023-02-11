@@ -345,14 +345,6 @@ class Consensus(KNN):
 
         return list(set(cs_id_list))
 
-    def __get_chosen_feature_data(self, data_list, chosen_record_diff_list):
-        for chosen_symbol in chosen_record_diff_list:
-            for record in data_list:
-                temp_list = record.split()
-                symbol_name = temp_list[0]
-                # if chosen_symbol == symbol_name:
-                #     print(temp_list)
-
     @classmethod
     def __get_head_symbol(cls, data_list):
         temp_list = []
@@ -386,7 +378,88 @@ class Consensus(KNN):
 
     @classmethod
     def __get_cs_top_symbol_intersection(cls, normal_data_list, attack_data_list):
-        print(normal_data_list)
+        normal_data_set = set(normal_data_list)
+        attack_data_set = set(attack_data_list)
+        intersection_set = normal_data_set & attack_data_set
+
+        return list(intersection_set)
+
+    @classmethod
+    def __get_chosen_feature_data(cls, data_list, chosen_record_diff_list):
+        ret_data_list = []
+        for chosen_symbol in chosen_record_diff_list:
+            for record in data_list:
+                temp_list = record.split()
+                symbol_name = temp_list[0]
+                if chosen_symbol == symbol_name:
+                    ret_data_list.append(temp_list)
+
+        return ret_data_list
+
+    def __get_cs_top_unique_cs_id_data(self, unique_cs_id_list, cs_path_list, chosen_record_diff_list):
+        sampled_cycles_dict = {}
+        sampled_instructions_dict = {}
+        sampled_branch_dict = {}
+        for cs_path in cs_path_list:
+            if cs_path.find(Constant.CS_TOP) > 0:
+                for unique_cs_id in unique_cs_id_list:
+                    if cs_path.find(unique_cs_id) > 0:
+                        if cs_path.find(Constant.LIST_SEQUENCE[0]) > 0:  # cycles
+                            data = self.__read_str_txt(cs_path)
+                            data_list = self.__get_chosen_feature_data(data, chosen_record_diff_list)
+                            sampled_cycles_dict[unique_cs_id] = data_list
+                        elif cs_path.find(Constant.LIST_SEQUENCE[1]) > 0:  # instructions
+                            data = self.__read_str_txt(cs_path)
+                            data_list = self.__get_chosen_feature_data(data, chosen_record_diff_list)
+                            sampled_instructions_dict[unique_cs_id] = data_list
+                        elif cs_path.find(Constant.LIST_SEQUENCE[2]) > 0:  # branch
+                            data = self.__read_str_txt(cs_path)
+                            data_list = self.__get_chosen_feature_data(data, chosen_record_diff_list)
+                            sampled_branch_dict[unique_cs_id] = data_list
+
+        return sampled_cycles_dict, sampled_instructions_dict, sampled_branch_dict
+
+    @classmethod
+    def __get_cs_top_intersection_symbol_list(cls, normal_ref_feature_dict, attack_ref_feature_dict,
+                                              base_intersection_list):
+        normal_cs_id_list = []
+        for cs_id in normal_ref_feature_dict.keys():
+            normal_cs_id_list.append(cs_id)
+        attack_cs_id_list = []
+        for cs_id in attack_ref_feature_dict.keys():
+            attack_cs_id_list.append(cs_id)
+
+        cs_id_intersection_set = set(normal_cs_id_list) & set(attack_cs_id_list)
+        unique_cs_id_intersection_list = list(cs_id_intersection_set)
+
+        intersection_symbol_set = {}
+        for unique_cs_id in unique_cs_id_intersection_list:
+            normal_ref_feature_list = normal_ref_feature_dict[unique_cs_id]
+            attack_ref_feature_list = attack_ref_feature_dict[unique_cs_id]
+
+            normal_symbol_list = []
+            for normal_ref_feature in normal_ref_feature_list:
+                normal_symbol = normal_ref_feature[0]
+                for base in base_intersection_list:
+                    if base == normal_symbol:
+                        normal_symbol_list.append(normal_symbol)
+                        break
+
+            attack_symbol_list = []
+            for attack_ref_feature in attack_ref_feature_list:
+                attack_symbol = attack_ref_feature[0]
+                for base in base_intersection_list:
+                    if base == attack_symbol:
+                        attack_symbol_list.append(attack_symbol)
+                        break
+
+            sub_intersection_symbol_set = set(normal_symbol_list) & set(attack_symbol_list)
+            if len(intersection_symbol_set) > 0:
+                intersection_symbol_set &= sub_intersection_symbol_set
+            else:
+                intersection_symbol_set = sub_intersection_symbol_set
+
+        return list(intersection_symbol_set)
 
     def __get_cs_top_data(self, chosen_record_diff_list):
         normal_cycles_list, normal_instructions_list, normal_branch_list = \
@@ -394,28 +467,43 @@ class Consensus(KNN):
         attack_cycles_list, attack_instructions_list, attack_branch_list = \
             self.__get_unique_cs_top_symbol(self.__attack_path)
 
-        self.__get_cs_top_symbol_intersection(normal_cycles_list, attack_cycles_list)
+        cycles_base_intersection_list = self.__get_cs_top_symbol_intersection(normal_cycles_list, attack_cycles_list)
+        instructions_base_intersection_list = self.__get_cs_top_symbol_intersection(normal_instructions_list,
+                                                                                    attack_instructions_list)
+        branch_base_intersection_list = self.__get_cs_top_symbol_intersection(normal_branch_list, attack_branch_list)
 
         normal_cs_path_list = self.__get_file_list_in_dir(self.__normal_path)
         unique_normal_cs_id_list = self.__get_unique_cs_id(normal_cs_path_list)
-        normal_cs_top_feature_dict = {}
+        attack_cs_path_list = self.__get_file_list_in_dir(self.__attack_path)
+        unique_attack_cs_id_list = self.__get_unique_cs_id(attack_cs_path_list)
 
-        for normal_cs_path in normal_cs_path_list:
-            if normal_cs_path.find(Constant.CS_TOP) > 0:
-                for unique_normal_cs_id in unique_normal_cs_id_list:
-                    if normal_cs_path.find(unique_normal_cs_id) > 0:
-                        if normal_cs_path.find(Constant.LIST_SEQUENCE[0]) > 0:  # cycles
-                            # print(unique_normal_cs_id, normal_cs_path)
-                            data = self.__read_str_txt(normal_cs_path)
-                            self.__get_chosen_feature_data(data, chosen_record_diff_list)
-                        elif normal_cs_path.find(Constant.LIST_SEQUENCE[1]) > 0:  # instructions
-                            # print(unique_normal_cs_id, normal_cs_path)
-                            data = self.__read_str_txt(normal_cs_path)
-                            self.__get_chosen_feature_data(data, chosen_record_diff_list)
-                        elif normal_cs_path.find(Constant.LIST_SEQUENCE[2]) > 0:  # branch
-                            # print(unique_normal_cs_id, normal_cs_path)
-                            data = self.__read_str_txt(normal_cs_path)
-                            self.__get_chosen_feature_data(data, chosen_record_diff_list)
+        normal_ref_cycles_dict, normal_ref_instructions_dict, normal_ref_branch_dict = \
+            self.__get_cs_top_unique_cs_id_data(unique_normal_cs_id_list, normal_cs_path_list, chosen_record_diff_list)
+        attack_ref_cycles_dict, attack_ref_instructions_dict, attack_ref_branch_dict = \
+            self.__get_cs_top_unique_cs_id_data(unique_attack_cs_id_list, attack_cs_path_list, chosen_record_diff_list)
+
+        intersection_cycles_list = self.__get_cs_top_intersection_symbol_list(normal_ref_cycles_dict,
+                                                                              attack_ref_cycles_dict,
+                                                                              cycles_base_intersection_list)
+        intersection_instructions_list = self.__get_cs_top_intersection_symbol_list(normal_ref_instructions_dict,
+                                                                                    attack_ref_instructions_dict,
+                                                                                    instructions_base_intersection_list)
+        intersection_branch_list = self.__get_cs_top_intersection_symbol_list(normal_ref_branch_dict,
+                                                                              attack_ref_branch_dict,
+                                                                              branch_base_intersection_list)
+
+        self.__get_ml_features(normal_ref_cycles_dict, attack_ref_cycles_dict, intersection_cycles_list)
+
+    def __get_ml_features(self, normal_ref_feature_dict, attack_ref_feature_dict, intersection_feature_list):
+        normal_feature_dict = {}
+        for normal_cs_id, normal_ref_feature in normal_ref_feature_dict.items():
+            symbol = normal_ref_feature[0][0]
+            for intersection_feature in intersection_feature_list:
+                if intersection_feature == symbol:
+                    normal_feature_dict[symbol] = normal_ref_feature[0][1:]
+                    print(normal_ref_feature)
+
+        print(normal_feature_dict)
 
     def load_data(self):
         largest_stat_feature_list = self.__cs_stat_diff_list[0][1]
