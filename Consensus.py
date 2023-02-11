@@ -492,18 +492,39 @@ class Consensus(KNN):
                                                                               attack_ref_branch_dict,
                                                                               branch_base_intersection_list)
 
-        self.__get_ml_features(normal_ref_cycles_dict, attack_ref_cycles_dict, intersection_cycles_list)
+        normal_cycle_feature_dict, attack_cycle_feature_dict = self.__get_ml_features(normal_ref_cycles_dict,
+                                                                                      attack_ref_cycles_dict,
+                                                                                      intersection_cycles_list)
+        normal_instruction_feature_dict, attack_instruction_feature_dict = \
+            self.__get_ml_features(normal_ref_instructions_dict, attack_ref_instructions_dict,
+                                   intersection_instructions_list)
+        normal_brunch_feature_dict, attack_brunch_feature_dict = \
+            self.__get_ml_features(normal_ref_branch_dict, attack_ref_branch_dict, intersection_branch_list)
 
-    def __get_ml_features(self, normal_ref_feature_dict, attack_ref_feature_dict, intersection_feature_list):
+        self.__get_feature_difference()
+
+    def __get_feature_difference(self):
+        print('diff')
+
+    @classmethod
+    def __get_ml_features(cls, normal_ref_feature_dict, attack_ref_feature_dict, intersection_feature_list):
         normal_feature_dict = {}
         for normal_cs_id, normal_ref_feature in normal_ref_feature_dict.items():
-            symbol = normal_ref_feature[0][0]
-            for intersection_feature in intersection_feature_list:
-                if intersection_feature == symbol:
-                    normal_feature_dict[symbol] = normal_ref_feature[0][1:]
-                    print(normal_ref_feature)
+            for normal_feature in normal_ref_feature:
+                symbol = normal_feature[0]
+                for intersection_feature in intersection_feature_list:
+                    if intersection_feature == symbol:
+                        normal_feature_dict[symbol] = normal_feature[1:]
 
-        print(normal_feature_dict)
+        attack_feature_dict = {}
+        for attack_cs_id, attack_ref_feature in attack_ref_feature_dict.items():
+            for attack_feature in attack_ref_feature:
+                symbol = attack_feature[0]
+                for intersection_feature in intersection_feature_list:
+                    if intersection_feature == symbol:
+                        attack_feature_dict[symbol] = attack_feature[1:]
+
+        return normal_feature_dict, attack_feature_dict
 
     def load_data(self):
         largest_stat_feature_list = self.__cs_stat_diff_list[0][1]
