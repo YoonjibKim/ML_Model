@@ -4,6 +4,7 @@ from Feature_Engineering import Feature_Engineering
 from Data_Save import DataSave
 from Dataset import Dataset
 
+
 if __name__ == '__main__':
     dataset = Dataset()
     dataset.access_dataset(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_OFF)
@@ -18,6 +19,6 @@ if __name__ == '__main__':
 
     consensus = Consensus(cs_training_normal_data_dict, cs_training_attack_data_dict, cs_testing_normal_data,
                           cs_testing_attack_data)
-    consensus.knn()
+
 
 

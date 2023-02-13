@@ -24,3 +24,7 @@ ATTACK = 'Attack'
 
 LIST_SEQUENCE = ['cycles', 'instructions', 'branch']
 
+TESTING_ATTACK = 'Testing_features/Attack'
+TESTING_NORMAL = 'Testing_features/Normal'
+TRAINING_ATTACK = 'Training_features/Attack'
+TRAINING_NORMAL = 'Training_features/Normal'
