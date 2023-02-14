@@ -28,3 +28,8 @@ TESTING_ATTACK = 'Testing_features/Attack'
 TESTING_NORMAL = 'Testing_features/Normal'
 TRAINING_ATTACK = 'Training_features/Attack'
 TRAINING_NORMAL = 'Training_features/Normal'
+
+EXTENDED_DATASET_PATH = 'Final_dataset/Extend'
+CUT_DATASET_PATH = 'Final_dataset/Cut'
+
+FEATURE_EPOCH = 20000

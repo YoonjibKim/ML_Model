@@ -638,12 +638,104 @@ class Feature_Engineering(KNN):
 
         return feature_array_dict
 
-    def feature_configuration_setting_for_cs(self):
-        training_normal_data_dict = self.__cs_normal_array_feature_dict
-        training_attack_data_dict = self.__cs_attack_array_feature_dict
+    def get_feature_for_cs(self):
+        temp_training_normal_data_dict = self.__cs_normal_array_feature_dict
+        temp_training_attack_data_dict = self.__cs_attack_array_feature_dict
 
-        cs_id_list = list(cs_id for cs_id in training_normal_data_dict.keys())
-        testing_normal_data = self.__get_testing_data(cs_id_list, self.__normal_path)
-        testing_attack_data = self.__get_testing_data(cs_id_list, self.__attack_path)
+        symbol_list = list(cs_id for cs_id in temp_training_normal_data_dict.keys())
+        temp_testing_normal_data_dict = self.__get_testing_data(symbol_list, self.__normal_path)
+        testing_normal_symbol_list = list(symbol for symbol in temp_testing_normal_data_dict.keys())
+        temp_testing_attack_data_dict = self.__get_testing_data(symbol_list, self.__attack_path)
+        testing_attack_symbol_list = list(symbol for symbol in temp_testing_attack_data_dict.keys())
+        testing_intersection_symbol_list = list(set(testing_normal_symbol_list) & set(testing_attack_symbol_list))
 
-        return training_normal_data_dict, training_attack_data_dict, testing_normal_data, testing_attack_data
+        training_normal_symbol_list = list(symbol for symbol in temp_training_normal_data_dict.keys())
+        training_attack_symbol_list = list(symbol for symbol in temp_training_attack_data_dict.keys())
+        training_intersection_symbol_list = list(set(training_normal_symbol_list) & set(training_attack_symbol_list))
+        intersection_symbol_list = list(set(testing_intersection_symbol_list) & set(training_intersection_symbol_list))
+
+        training_normal_data_dict = {}
+        training_attack_data_dict = {}
+        testing_normal_data_dict = {}
+        testing_attack_data_dict = {}
+        for symbol in intersection_symbol_list:
+            training_normal_data_dict[symbol] = temp_training_normal_data_dict[symbol]
+            training_attack_data_dict[symbol] = temp_training_attack_data_dict[symbol]
+            testing_normal_data_dict[symbol] = temp_testing_normal_data_dict[symbol]
+            testing_attack_data_dict[symbol] = temp_testing_attack_data_dict[symbol]
+
+        return training_normal_data_dict, training_attack_data_dict, testing_normal_data_dict, \
+            testing_attack_data_dict, intersection_symbol_list
+
+    @classmethod
+    def __get_larger_avg_features(cls, data_dict):
+        temp_size_list = []
+        for data_points in data_dict.values():
+            temp_size_list.append(len(data_points))
+        avg = np.mean(temp_size_list)
+        temp_size_list.clear()
+
+        symbol_list = []
+        for symbol, data_points in data_dict.items():
+            data_size = len(data_points)
+            if data_size > avg:
+                symbol_list.append(symbol)
+
+        return symbol_list
+
+    @classmethod
+    def __get_min_size_feature(cls, data_dict, all_intersection_symbol_list):
+        temp_size_list = []
+        for symbol in all_intersection_symbol_list:
+            temp_size = len(data_dict[symbol])
+            temp_size_list.append(temp_size)
+        temp_size_list = sorted(temp_size_list)
+
+        return temp_size_list[0]
+
+    def get_cut_feature_for_cs(self, training_normal_data_dict, training_attack_data_dict, testing_normal_data_dict,
+                               testing_attack_data_dict, intersection_symbol_list):
+        training_normal_symbol_list = self.__get_larger_avg_features(training_normal_data_dict)
+        training_attack_symbol_list = self.__get_larger_avg_features(training_attack_data_dict)
+        testing_normal_symbol_list = self.__get_larger_avg_features(testing_normal_data_dict)
+        testing_attack_symbol_list = self.__get_larger_avg_features(testing_attack_data_dict)
+
+        all_intersection_symbol_set = set(training_normal_symbol_list) & set(training_attack_symbol_list) & \
+                                      set(testing_normal_symbol_list) & set(testing_attack_symbol_list) & \
+                                      set(intersection_symbol_list)
+        all_intersection_symbol_list = list(all_intersection_symbol_set)
+
+        training_normal_size = self.__get_min_size_feature(training_normal_data_dict, all_intersection_symbol_list)
+        training_attack_size = self.__get_min_size_feature(training_attack_data_dict, all_intersection_symbol_list)
+        testing_normal_size = self.__get_min_size_feature(testing_normal_data_dict, all_intersection_symbol_list)
+        testing_attack_size = self.__get_min_size_feature(testing_attack_data_dict, all_intersection_symbol_list)
+
+        if training_normal_size > training_attack_size:
+            training_min_size = training_attack_size
+        else:
+            training_min_size = training_normal_size
+
+        if testing_normal_size > testing_attack_size:
+            testing_min_size = testing_attack_size
+        else:
+            testing_min_size = testing_normal_size
+
+        training_normal_cut_data_dict = {}
+        training_attack_cut_data_dict = {}
+        testing_normal_cut_data_dict = {}
+        testing_attack_cut_data_dict = {}
+        for symbol in all_intersection_symbol_list:
+            data_list = training_normal_data_dict[symbol][:training_min_size]
+            training_normal_cut_data_dict[symbol] = data_list
+
+            data_list = training_attack_data_dict[symbol][:training_min_size]
+            training_attack_cut_data_dict[symbol] = data_list
+
+            data_list = testing_normal_data_dict[symbol][:testing_min_size]
+            testing_normal_cut_data_dict[symbol] = data_list
+
+            data_list = testing_attack_data_dict[symbol][:testing_min_size]
+            testing_attack_cut_data_dict[symbol] = data_list
+
+        return training_normal_cut_data_dict, training_attack_cut_data_dict, testing_normal_cut_data_dict, \
+            testing_attack_cut_data_dict

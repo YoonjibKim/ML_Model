@@ -1,10 +1,6 @@
-
-import matplotlib
 import numpy as np
 import torch
 import torch.nn as nn
-import torch.optim as optim
-import torch.nn.init as init
 import matplotlib.pyplot as plt
 
 import Constant
@@ -12,28 +8,40 @@ from Machine_learning_algorithms.K_Nearest_Neighbor import KNN
 
 
 class Consensus(KNN):
+    __training_normal_feature_dict = {}
+    __training_attack_feature_dict = {}
+    __testing_normal_feature_dict = {}
+    __testing_attack_feature_dict = {}
+
     def __init__(self, training_normal_data_dict, training_attack_data_dict, testing_normal_data, testing_attack_data):
-        self.__prepare_features(training_normal_data_dict, training_attack_data_dict, testing_normal_data,
-                                testing_attack_data)
+        self.__training_normal_feature_dict, self.__training_attack_feature_dict, self.__testing_normal_feature_dict, \
+            self.__testing_attack_feature_dict = self.__prepare_features(training_normal_data_dict,
+                                                                         training_attack_data_dict, testing_normal_data,
+                                                                         testing_attack_data)
         self.__training_normal_data_dict = training_normal_data_dict
         self.__training_attack_data_dict = training_attack_data_dict
         self.__testing_normal_data = testing_normal_data
         self.__testing_normal_data = testing_attack_data
 
+    def get_features(self):
+        return self.__training_normal_feature_dict, self.__training_attack_feature_dict, \
+            self.__testing_normal_feature_dict, self.__testing_attack_feature_dict
+
     @classmethod
-    def __get_extended_data_points(cls, symbol, feature_list, extension_size, feature_type):
+    def __get_extended_data_points(cls, symbol, feature_array, extension_size, feature_type):
         extended_y_array = None
-        if len(feature_list) < extension_size:
-            extension_size -= len(feature_list)
+        x_list = []
+        y = np.float_(list(map(lambda data: [data], feature_array)))
+        for index in range(0, len(feature_array)):
+            x_list.append([index])
+
+        x = np.float_(x_list)
+        extension_size = int(extension_size)
+        if len(feature_array) < extension_size - 1:
+            extension_size -= len(feature_array)
             output = None
-            x_list = []
-            y = np.float_(list(map(lambda data: [data], feature_list)))
-            for index in range(0, len(feature_list)):
-                x_list.append([index])
 
             final_x = x_list[len(x_list) - 1][0]
-
-            x = np.float_(x_list)
             x = torch.Tensor(x)
             y = torch.Tensor(y)
 
@@ -61,7 +69,7 @@ class Consensus(KNN):
 
             added_x = torch.Tensor(list([index] for index in range(final_x + 1, final_x + extension_size)))
 
-            num_epoch = 200
+            num_epoch = Constant.FEATURE_EPOCH
             loss_array = []
             for epoch in range(num_epoch):
                 optimizer.zero_grad()
@@ -98,20 +106,57 @@ class Consensus(KNN):
             extended_x_array = np.concatenate((x, x_array))
             extended_x_array = torch.Tensor(extended_x_array)
 
-            plt.figure(figsize=(10, 10))
             plt.title('Non-linear Regression Analysis: ' + symbol)
+            plt.figure(figsize=(10, 10))
             plt.ylabel('overhead (%)')
             plt.xlabel('sequence')
             plt.plot(x, y, '-', color="blue", label='Solid')
             plt.plot(extended_x_array, extended_y_array, '-', color="red", label='Solid')
             plt.savefig('Output_results/' + feature_type + '/objective_function_' + symbol + '.png')
         else:
-            extended_y_array = np.array(feature_list)
+            if len(feature_array) > extension_size:
+                feature_type_size = len(feature_array)
+                term = feature_type_size / extension_size
+                term_round = round(term)
+
+                data_list = []
+                x_list.clear()
+                x_index = 0
+                feature_size = len(feature_array)
+                for index in range(0, feature_size):
+                    if x_index >= extension_size - 1:
+                        break
+
+                    residue = index % term_round
+                    if residue == 0:
+                        term_data = feature_array[index]
+                        data_list.append(term_data)
+                        x_list.append(x_index)
+                        x_index += 1
+
+                x = np.array(x_list)
+                feature_array = np.array(data_list)
+            else:
+                while len(feature_array) != extension_size:
+                    last_one = feature_array[len(feature_array) - 1]
+                    feature_array = np.append(feature_array, [last_one], axis=0)
+                    last_count = x[len(x) - 1]
+                    last_count += 1.0
+                    x = np.append(x, [last_count], axis=0)
+
+            print(feature_type, len(feature_array), extension_size)
+            extended_y_array = np.array(feature_array)
+            plt.figure(figsize=(10, 10))
+            plt.title('Non-linear Regression Analysis: ' + symbol)
+            plt.ylabel('overhead (%)')
+            plt.xlabel('sequence')
+            plt.plot(x, extended_y_array, '-', color="blue", label='Solid')
+            plt.savefig('Output_results/' + feature_type + '/objective_function_' + symbol + '.png')
 
         return extended_y_array
 
-    def __prepare_features(self, training_normal_data_dict, training_attack_data_dict, testing_normal_data,
-                           testing_attack_data):
+    def __prepare_features(self, training_normal_data_dict, training_attack_data_dict, testing_normal_data_dict,
+                           testing_attack_data_dict):
         training_data_point_size_list = []
         for symbol, data_list in training_normal_data_dict.items():
             size = len(data_list)
@@ -122,11 +167,11 @@ class Consensus(KNN):
             training_data_point_size_list.append(size)
 
         testing_data_point_size_list = []
-        for symbol, data_list in testing_normal_data.items():
+        for symbol, data_list in testing_normal_data_dict.items():
             size = len(data_list)
             testing_data_point_size_list.append(size)
 
-        for symbol, data_list in testing_attack_data.items():
+        for symbol, data_list in testing_attack_data_dict.items():
             size = len(data_list)
             testing_data_point_size_list.append(size)
 
@@ -142,19 +187,57 @@ class Consensus(KNN):
 
         training_normal_feature_dict = {}
         for symbol, feature_list in training_normal_data_dict.items():
-            print(len(feature_list), max_training_size)
+            print('training normal', len(feature_list), max_training_size)  # 파일에 저장
             temp = self.__get_extended_data_points(symbol, feature_list, max_training_size,
                                                    Constant.TRAINING_NORMAL)
             training_normal_feature_dict[symbol] = temp
 
         training_attack_feature_dict = {}
         for symbol, feature_list in training_attack_data_dict.items():
-            print(len(feature_list), max_training_size)
+            print('training attack', len(feature_list), max_training_size)  # 파일에 저장
             temp = self.__get_extended_data_points(symbol, feature_list, max_training_size,
                                                    Constant.TRAINING_ATTACK)
             training_attack_feature_dict[symbol] = temp
 
+        size_list = []
+        temp_testing_normal_feature_dict = {}
+        for symbol, feature_list in testing_normal_data_dict.items():
+            print('testing normal', len(feature_list), fixed_testing_size)  # 파일에 저장
+            temp = self.__get_extended_data_points(symbol, feature_list, fixed_testing_size,
+                                                   Constant.TESTING_NORMAL)
+            temp_testing_normal_feature_dict[symbol] = temp
+            size_list.append(len(temp))
 
+        size_list = sorted(size_list)
+        testing_normal_min_size = size_list[0]
+        size_list.clear()
+
+        temp_testing_attack_feature_dict = {}
+        for symbol, feature_list in testing_attack_data_dict.items():
+            print('testing attack', len(feature_list), fixed_testing_size)  # 파일에 저장
+            temp = self.__get_extended_data_points(symbol, feature_list, fixed_testing_size,
+                                                   Constant.TESTING_ATTACK)
+            temp_testing_attack_feature_dict[symbol] = temp
+            size_list.append(len(temp))
+
+        size_list = sorted(size_list)
+        testing_attack_min_size = size_list[0]
+
+        if testing_normal_min_size < testing_attack_min_size:
+            testing_min_size = testing_normal_min_size
+        else:
+            testing_min_size = testing_attack_min_size
+
+        testing_normal_feature_dict = {}
+        for symbol, data_points in temp_testing_normal_feature_dict.items():
+            testing_normal_feature_dict[symbol] = data_points[:testing_min_size]
+
+        testing_attack_feature_dict = {}
+        for symbol, data_points in temp_testing_attack_feature_dict.items():
+            testing_attack_feature_dict[symbol] = data_points[:testing_min_size]
+
+        return training_normal_feature_dict, training_attack_feature_dict, testing_normal_feature_dict, \
+            testing_attack_feature_dict
 
     def knn(self):
         KNN.run(self, self.__training_normal_data_dict, self.__training_attack_data_dict, self.__testing_normal_data,

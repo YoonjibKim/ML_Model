@@ -1,6 +1,9 @@
 import csv
 import json
 import os
+
+import pandas as pd
+
 import Constant
 
 
@@ -280,3 +283,30 @@ class DataSave:
                 wr.writerow(['overhead', 'symbol'])
                 wr.writerows(cs_record_diff)
                 wr.writerow('\n')
+
+    @classmethod
+    def save_top_features(cls, training_normal_feature_dict, training_attack_feature_dict,
+                          testing_normal_feature_dict, testing_attack_feature_dict, feature_type):
+        training_normal_feature_df = pd.DataFrame(training_normal_feature_dict)
+        training_attack_feature_df = pd.DataFrame(training_attack_feature_dict)
+        testing_normal_feature_df = pd.DataFrame(testing_normal_feature_dict)
+        testing_attack_feature_df = pd.DataFrame(testing_attack_feature_dict)
+
+        if feature_type == Constant.EXTENDED_DATASET_PATH:
+            training_normal_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/training_normal_feature.csv',
+                                              index=False)
+            training_attack_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/training_attack_feature.csv',
+                                              index=False)
+            testing_normal_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/testing_normal_feature.csv',
+                                             index=False)
+            testing_attack_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/testing_attack_feature.csv',
+                                             index=False)
+        else:
+            training_normal_feature_df.to_csv(Constant.CUT_DATASET_PATH + '/training_normal_feature.csv',
+                                              index=False)
+            training_attack_feature_df.to_csv(Constant.CUT_DATASET_PATH + '/training_attack_feature.csv',
+                                              index=False)
+            testing_normal_feature_df.to_csv(Constant.CUT_DATASET_PATH + '/testing_normal_feature.csv',
+                                             index=False)
+            testing_attack_feature_df.to_csv(Constant.CUT_DATASET_PATH + '/testing_attack_feature.csv',
+                                             index=False)
