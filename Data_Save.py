@@ -2,6 +2,7 @@ import csv
 import json
 import os
 
+import numpy as np
 import pandas as pd
 
 import Constant
@@ -285,14 +286,41 @@ class DataSave:
                 wr.writerow('\n')
 
     @classmethod
+    def __remove_inner_list(cls, data_dict):
+        converted_dict = {}
+        size_list = []
+        for symbol, data_array in data_dict.items():
+            if len(np.shape(data_array)) > 1:
+                temp_list = list(data[0] for data in data_array)
+            else:
+                temp_array = data_dict[symbol]
+                temp_list = temp_array.tolist()
+
+            converted_dict[symbol] = temp_list
+            size_list.append(len(temp_list))
+
+        size_list = sorted(size_list)
+        min_size = size_list[0]
+
+        ret_dict = {}
+        for symbol, data_array in converted_dict.items():
+            ret_dict[symbol] = data_array[:min_size]
+
+        return ret_dict
+
+    @classmethod
     def save_top_features(cls, training_normal_feature_dict, training_attack_feature_dict,
                           testing_normal_feature_dict, testing_attack_feature_dict, feature_type):
-        training_normal_feature_df = pd.DataFrame(training_normal_feature_dict)
-        training_attack_feature_df = pd.DataFrame(training_attack_feature_dict)
-        testing_normal_feature_df = pd.DataFrame(testing_normal_feature_dict)
-        testing_attack_feature_df = pd.DataFrame(testing_attack_feature_dict)
-
         if feature_type == Constant.EXTENDED_DATASET_PATH:
+            temp_dict_1 = cls.__remove_inner_list(training_normal_feature_dict)
+            training_normal_feature_df = pd.DataFrame(temp_dict_1)
+            temp_dict_2 = cls.__remove_inner_list(training_attack_feature_dict)
+            training_attack_feature_df = pd.DataFrame(temp_dict_2)
+            temp_dict_3 = cls.__remove_inner_list(testing_normal_feature_dict)
+            testing_normal_feature_df = pd.DataFrame(temp_dict_3)
+            temp_dict_4 = cls.__remove_inner_list(testing_attack_feature_dict)
+            testing_attack_feature_df = pd.DataFrame(temp_dict_4)
+
             training_normal_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/training_normal_feature.csv',
                                               index=False)
             training_attack_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/training_attack_feature.csv',
@@ -302,6 +330,11 @@ class DataSave:
             testing_attack_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/testing_attack_feature.csv',
                                              index=False)
         else:
+            training_normal_feature_df = pd.DataFrame(training_normal_feature_dict)
+            training_attack_feature_df = pd.DataFrame(training_attack_feature_dict)
+            testing_normal_feature_df = pd.DataFrame(testing_normal_feature_dict)
+            testing_attack_feature_df = pd.DataFrame(testing_attack_feature_dict)
+
             training_normal_feature_df.to_csv(Constant.CUT_DATASET_PATH + '/training_normal_feature.csv',
                                               index=False)
             training_attack_feature_df.to_csv(Constant.CUT_DATASET_PATH + '/training_attack_feature.csv',

@@ -23,7 +23,7 @@ class Consensus(KNN):
         self.__testing_normal_data = testing_normal_data
         self.__testing_normal_data = testing_attack_data
 
-    def get_features(self):
+    def get_extended_features(self):
         return self.__training_normal_feature_dict, self.__training_attack_feature_dict, \
             self.__testing_normal_feature_dict, self.__testing_attack_feature_dict
 
@@ -85,13 +85,6 @@ class Consensus(KNN):
 
             added_output = model(added_x)
 
-            fi_los = [fl.item() for fl in loss_array]
-            plt.plot(range(num_epoch), fi_los)
-            plt.title('Adam Optimizer: ' + symbol)
-            plt.ylabel('loss')
-            plt.xlabel('epoch')
-            plt.savefig('Output_results/' + feature_type + '/loss_rate_' + symbol + '.png')
-
             x = x.cpu().detach().numpy()
             y = y.cpu().detach().numpy()
             output = output.cpu().detach().numpy()
@@ -105,14 +98,6 @@ class Consensus(KNN):
             x_array = np.array(x_list)
             extended_x_array = np.concatenate((x, x_array))
             extended_x_array = torch.Tensor(extended_x_array)
-
-            plt.title('Non-linear Regression Analysis: ' + symbol)
-            plt.figure(figsize=(10, 10))
-            plt.ylabel('overhead (%)')
-            plt.xlabel('sequence')
-            plt.plot(x, y, '-', color="blue", label='Solid')
-            plt.plot(extended_x_array, extended_y_array, '-', color="red", label='Solid')
-            plt.savefig('Output_results/' + feature_type + '/objective_function_' + symbol + '.png')
         else:
             if len(feature_array) > extension_size:
                 feature_type_size = len(feature_array)
@@ -146,12 +131,6 @@ class Consensus(KNN):
 
             print(feature_type, len(feature_array), extension_size)
             extended_y_array = np.array(feature_array)
-            plt.figure(figsize=(10, 10))
-            plt.title('Non-linear Regression Analysis: ' + symbol)
-            plt.ylabel('overhead (%)')
-            plt.xlabel('sequence')
-            plt.plot(x, extended_y_array, '-', color="blue", label='Solid')
-            plt.savefig('Output_results/' + feature_type + '/objective_function_' + symbol + '.png')
 
         return extended_y_array
 
