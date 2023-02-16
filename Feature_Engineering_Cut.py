@@ -9,7 +9,7 @@ from Data_Save import DataSave
 from Machine_learning_algorithms.K_Nearest_Neighbor import KNN
 
 
-class Feature_Engineering(KNN):
+class Feature_Engineering_Cut(KNN):
     __gs_stat_diff_list = []
     __cs_stat_diff_list = []
     __gs_record_diff_list = []

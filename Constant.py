@@ -24,10 +24,10 @@ ATTACK = 'Attack'
 
 LIST_SEQUENCE = ['cycles', 'instructions', 'branch']
 
-TESTING_ATTACK = 'Testing_features/Attack'
-TESTING_NORMAL = 'Testing_features/Normal'
-TRAINING_ATTACK = 'Training_features/Attack'
-TRAINING_NORMAL = 'Training_features/Normal'
+TESTING_ATTACK = 'testing_attack_feature.csv'
+TESTING_NORMAL = 'testing_normal_feature.csv'
+TRAINING_ATTACK = 'training_attack_feature.csv'
+TRAINING_NORMAL = 'training_normal_feature.csv'
 
 EXTENDED_DATASET_PATH = 'Final_dataset/Extend'
 CUT_DATASET_PATH = 'Final_dataset/Cut'
