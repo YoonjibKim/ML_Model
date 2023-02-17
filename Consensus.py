@@ -55,29 +55,25 @@ class Consensus(KNN, K_Means):
             file_name = split_path_list[len(split_path_list) - 1]
             feature_array = np.array(read_line[1:])
             if file_name == Constant.TESTING_ATTACK:
-                cls.__testing_attack_data_array = np.append(cls.__testing_attack_data_array, feature_array,
-                                                            axis=0)
+                cls.__testing_attack_data_array = np.append(cls.__testing_attack_data_array, feature_array, axis=0)
                 temp_list = []
                 for i in range(0, len(cls.__testing_attack_data_array)):
                     temp_list.append(1)
                 cls.__testing_attack_label_array = np.array(temp_list)
             elif file_name == Constant.TESTING_NORMAL:
-                cls.__testing_normal_data_array = np.append(cls.__testing_normal_data_array, feature_array,
-                                                            axis=0)
+                cls.__testing_normal_data_array = np.append(cls.__testing_normal_data_array, feature_array, axis=0)
                 temp_list = []
                 for i in range(0, len(cls.__testing_normal_data_array)):
                     temp_list.append(0)
                 cls.__testing_normal_label_array = np.array(temp_list)
             elif file_name == Constant.TRAINING_ATTACK:
-                cls.__training_attack_data_array = np.append(cls.__training_attack_data_array, feature_array,
-                                                             axis=0)
+                cls.__training_attack_data_array = np.append(cls.__training_attack_data_array, feature_array, axis=0)
                 temp_list = []
                 for i in range(0, len(cls.__training_attack_data_array)):
                     temp_list.append(1)
                 cls.__training_attack_label_array = np.array(temp_list)
             elif file_name == Constant.TRAINING_NORMAL:
-                cls.__training_normal_data_array = np.append(cls.__training_normal_data_array, feature_array,
-                                                             axis=0)
+                cls.__training_normal_data_array = np.append(cls.__training_normal_data_array, feature_array, axis=0)
                 temp_list = []
                 for i in range(0, len(cls.__training_normal_data_array)):
                     temp_list.append(0)
@@ -103,5 +99,4 @@ class Consensus(KNN, K_Means):
 
     @classmethod
     def k_means(cls):
-        super().k_means_run(cls.__training_data_array, cls.__training_label_array, cls.__testing_data_array,
-                            cls.__testing_label_array)
+        super().k_means_run(cls.__testing_data_array, cls.__testing_label_array)

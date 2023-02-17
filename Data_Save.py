@@ -49,7 +49,7 @@ class DataSave:
         return new_file_name + cs_id + '.' + extension
 
     @classmethod
-    def save_gs_features_to_storage(cls, dataset):
+    def save_gs_top_features_to_storage(cls, dataset):
         save_dir_path = dataset.get_base_dir_path()
         save_normal_path = save_dir_path + '/' + Constant.NORMAL
         save_attack_path = save_dir_path + '/' + Constant.ATTACK
@@ -109,7 +109,7 @@ class DataSave:
                     writer.writerow(record)
 
     @classmethod
-    def save_cs_features_to_storage(cls, dataset):
+    def save_cs_top_features_to_storage(cls, dataset):
         save_dir_path = dataset.get_base_dir_path()
         save_normal_path = save_dir_path + '/' + Constant.NORMAL
         save_attack_path = save_dir_path + '/' + Constant.ATTACK
@@ -311,7 +311,7 @@ class DataSave:
     @classmethod
     def save_top_features(cls, training_normal_feature_dict, training_attack_feature_dict,
                           testing_normal_feature_dict, testing_attack_feature_dict, feature_type):
-        if feature_type == Constant.EXTENDED_DATASET_PATH:
+        if feature_type == Constant.EXTENDED_TOP_DATASET_PATH:
             temp_dict_1 = cls.__remove_inner_list(training_normal_feature_dict)
             training_normal_feature_df = pd.DataFrame(temp_dict_1)
             temp_dict_2 = cls.__remove_inner_list(training_attack_feature_dict)
@@ -321,13 +321,13 @@ class DataSave:
             temp_dict_4 = cls.__remove_inner_list(testing_attack_feature_dict)
             testing_attack_feature_df = pd.DataFrame(temp_dict_4)
 
-            training_normal_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/training_normal_feature.csv',
+            training_normal_feature_df.to_csv(Constant.EXTENDED_TOP_DATASET_PATH + '/training_normal_feature.csv',
                                               index=False)
-            training_attack_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/training_attack_feature.csv',
+            training_attack_feature_df.to_csv(Constant.EXTENDED_TOP_DATASET_PATH + '/training_attack_feature.csv',
                                               index=False)
-            testing_normal_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/testing_normal_feature.csv',
+            testing_normal_feature_df.to_csv(Constant.EXTENDED_TOP_DATASET_PATH + '/testing_normal_feature.csv',
                                              index=False)
-            testing_attack_feature_df.to_csv(Constant.EXTENDED_DATASET_PATH + '/testing_attack_feature.csv',
+            testing_attack_feature_df.to_csv(Constant.EXTENDED_TOP_DATASET_PATH + '/testing_attack_feature.csv',
                                              index=False)
         else:
             training_normal_feature_df = pd.DataFrame(training_normal_feature_dict)
@@ -335,11 +335,11 @@ class DataSave:
             testing_normal_feature_df = pd.DataFrame(testing_normal_feature_dict)
             testing_attack_feature_df = pd.DataFrame(testing_attack_feature_dict)
 
-            training_normal_feature_df.to_csv(Constant.CUT_DATASET_PATH + '/training_normal_feature.csv',
+            training_normal_feature_df.to_csv(Constant.CUT_TOP_DATASET_PATH + '/training_normal_feature.csv',
                                               index=False)
-            training_attack_feature_df.to_csv(Constant.CUT_DATASET_PATH + '/training_attack_feature.csv',
+            training_attack_feature_df.to_csv(Constant.CUT_TOP_DATASET_PATH + '/training_attack_feature.csv',
                                               index=False)
-            testing_normal_feature_df.to_csv(Constant.CUT_DATASET_PATH + '/testing_normal_feature.csv',
+            testing_normal_feature_df.to_csv(Constant.CUT_TOP_DATASET_PATH + '/testing_normal_feature.csv',
                                              index=False)
-            testing_attack_feature_df.to_csv(Constant.CUT_DATASET_PATH + '/testing_attack_feature.csv',
+            testing_attack_feature_df.to_csv(Constant.CUT_TOP_DATASET_PATH + '/testing_attack_feature.csv',
                                              index=False)

@@ -4,7 +4,7 @@ import torch.nn as nn
 import Constant
 
 
-class Feature_Engineering_Extend:
+class TOP_Feature_Engineering_Extend:
     __training_normal_feature_dict = {}
     __training_attack_feature_dict = {}
     __testing_normal_feature_dict = {}
@@ -128,7 +128,6 @@ class Feature_Engineering_Extend:
                     last_count += 1.0
                     x = np.append(x, [last_count], axis=0)
 
-            print(feature_type, len(feature_array), extension_size)
             extended_y_array = np.array(feature_array)
 
         return extended_y_array

@@ -29,7 +29,7 @@ TESTING_NORMAL = 'testing_normal_feature.csv'
 TRAINING_ATTACK = 'training_attack_feature.csv'
 TRAINING_NORMAL = 'training_normal_feature.csv'
 
-EXTENDED_DATASET_PATH = 'Final_dataset/Extend'
-CUT_DATASET_PATH = 'Final_dataset/Cut'
+EXTENDED_TOP_DATASET_PATH = 'Final_dataset/TOP/Extend'
+CUT_TOP_DATASET_PATH = 'Final_dataset/TOP/Cut'
 
 FEATURE_EPOCH = 20000
