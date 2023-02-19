@@ -44,8 +44,18 @@ def generate_stat_dataset():
     dataset = Dataset()
     dataset.access_dataset(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_OFF)
 
-    stat_feature_engineering_single = STAT_Feature_Engineering_Single(dataset)
-    stat_feature_engineering_single.parsing_dataset('instructions')
+    stat_feature_engineering_single = STAT_Feature_Engineering_Single()
+    instructions_normal_data_array = \
+        stat_feature_engineering_single.parsing_dataset('instructions', dataset.get_normal_cs_stat_file_list())
+
+    instructions_attack_data_array = \
+        stat_feature_engineering_single.parsing_dataset('instructions', dataset.get_attack_cs_stat_file_list())
+
+    instructions_normal_label_array = stat_feature_engineering_single.get_label(Constant.NORMAL)
+    instructions_attack_label_array = stat_feature_engineering_single.get_label(Constant.ATTACK)
+
+
+
 
 
 if __name__ == '__main__':
