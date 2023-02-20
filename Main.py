@@ -27,11 +27,14 @@ def generate_top_dataset():
                                                        intersection_symbol_list)
 
     DataSave.save_top_features(training_normal_cut_data_dict, training_attack_cut_data_dict,
-                               testing_normal_cut_data_dict, testing_attack_cut_data_dict, Constant.CUT_TOP_DATASET_PATH)
+                               testing_normal_cut_data_dict, testing_attack_cut_data_dict,
+                               Constant.CUT_TOP_DATASET_PATH)
 
     # feature extend
-    feature_engineering_extend = TOP_Feature_Engineering_Extend(cs_training_normal_data_dict, cs_training_attack_data_dict,
-                                                                cs_testing_normal_data_dict, cs_testing_attack_data_dict)
+    feature_engineering_extend = TOP_Feature_Engineering_Extend(cs_training_normal_data_dict,
+                                                                cs_training_attack_data_dict,
+                                                                cs_testing_normal_data_dict,
+                                                                cs_testing_attack_data_dict)
 
     training_normal_feature_dict, training_attack_feature_dict, testing_normal_feature_dict, \
         testing_attack_feature_dict = feature_engineering_extend.get_extended_features()
@@ -51,11 +54,21 @@ def generate_stat_dataset():
     instructions_attack_data_array = \
         stat_feature_engineering_single.parsing_dataset('instructions', dataset.get_attack_cs_stat_file_list())
 
-    instructions_normal_label_array = stat_feature_engineering_single.get_label(Constant.NORMAL)
-    instructions_attack_label_array = stat_feature_engineering_single.get_label(Constant.ATTACK)
+    normal_labeled_feature_list = \
+        stat_feature_engineering_single.get_combined_mixed_labeled_feature_list(instructions_normal_data_array,
+                                                                                Constant.NORMAL)
+    attack_labeled_feature_list = \
+        stat_feature_engineering_single.get_combined_mixed_labeled_feature_list(instructions_attack_data_array,
+                                                                                Constant.ATTACK)
 
+    total_feature_list, total_label_list = \
+        stat_feature_engineering_single.get_randomly_mixed_feature_array(normal_labeled_feature_list,
+                                                                         attack_labeled_feature_list)
 
+    ret_training_feature_array, ret_testing_feature_array, ret_training_label_array, ret_testing_label_array = \
+        stat_feature_engineering_single.divide_training_and_testing_feature_array(total_feature_list, total_label_list)
 
+    return ret_training_feature_array, ret_testing_feature_array, ret_training_label_array, ret_testing_label_array
 
 
 if __name__ == '__main__':
@@ -69,6 +82,7 @@ if __name__ == '__main__':
     # consensus.knn()
     # consensus.k_means()
 
-    generate_stat_dataset()
-
+    training_feature_array, testing_feature_array, training_label_array, testing_label_array = generate_stat_dataset()
+    Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
+    Consensus.k_means(testing_feature_array, testing_label_array)
     print('Simulation End')

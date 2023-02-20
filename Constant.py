@@ -22,6 +22,9 @@ GS_TOP = 'gs_top'
 NORMAL = 'Normal'
 ATTACK = 'Attack'
 
+NORMAL_LABEL = 0
+ATTACK_LABEL = 1
+
 LIST_SEQUENCE = ['cycles', 'instructions', 'branch']
 
 TESTING_ATTACK = 'testing_attack_feature.csv'

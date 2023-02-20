@@ -47,11 +47,48 @@ class STAT_Feature_Engineering_Single:
 
         return combined_array
 
-    def get_label(self, feature_type):
-        label_array = None
-        if feature_type == Constant.ATTACK:
-            label_array = np.round(np.ones([self.__col_size, self.__row_size])).astype(int)
-        elif feature_type == Constant.NORMAL:
-            label_array = np.round(np.zeros([self.__col_size, self.__row_size])).astype(int)
+    @classmethod
+    def get_combined_mixed_labeled_feature_list(cls, feature_array, feature_type):
+        feature_list = []
+        for feature in feature_array:
+            temp_list = feature.tolist()
+            if feature_type == Constant.NORMAL:
+                temp_list.append(Constant.NORMAL_LABEL)
+            elif feature_type == Constant.ATTACK:
+                temp_list.append(Constant.ATTACK_LABEL)
 
-        return label_array
+            feature_list.append(temp_list)
+
+        return feature_list
+
+    @classmethod
+    def get_randomly_mixed_feature_array(cls, normal_feature_list, attack_feature_list):
+        total_feature_list = []
+        for normal_feature in normal_feature_list:
+            total_feature_list.append(normal_feature)
+
+        for attack_feature in attack_feature_list:
+            total_feature_list.append(attack_feature)
+
+        np.random.shuffle(total_feature_list)
+
+        total_label_list = []
+        label_index = len(total_feature_list[0]) - 1
+        for feature in total_feature_list:
+            label = feature.pop(label_index)
+            total_label_list.append(label)
+
+        return np.array(total_feature_list), np.array(total_label_list)
+
+    @classmethod
+    def divide_training_and_testing_feature_array(cls, feature_array, label_array):
+        total_size = len(label_array)
+        training_size = round(total_size * 0.75)
+        testing_size = round(total_size * 0.25)
+
+        training_feature_array = feature_array[:training_size]
+        testing_feature_array = feature_array[:testing_size]
+        training_label_array = label_array[:training_size]
+        testing_label_array = label_array[:testing_size]
+
+        return training_feature_array, testing_feature_array, training_label_array, testing_label_array

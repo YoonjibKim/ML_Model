@@ -93,10 +93,9 @@ class Consensus(KNN, K_Means):
                                               axis=0)
 
     @classmethod
-    def knn(cls):
-        super().knn_run(cls.__training_data_array, cls.__training_label_array, cls.__testing_data_array,
-                        cls.__testing_label_array)
+    def knn(cls, training_data_array, testing_data_array, training_label_array, testing_label_array):
+        super().knn_run(training_data_array, training_label_array, testing_data_array, testing_label_array)
 
     @classmethod
-    def k_means(cls):
-        super().k_means_run(cls.__testing_data_array, cls.__testing_label_array)
+    def k_means(cls, testing_data_array, testing_label_array):
+        super().k_means_run(testing_data_array, testing_label_array)
