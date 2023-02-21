@@ -1,6 +1,7 @@
 import Constant
+import Data_Save
 from Consensus import Consensus
-from STAT_Feature_Engineering_Single import STAT_Feature_Engineering_Single
+from STAT_Feature_Engineering import STAT_Feature_Engineering
 from TOP_Feature_Engineering_Extend import TOP_Feature_Engineering_Extend
 from TOP_Feature_Engineering_Cut import TOP_Feature_Engineering_Cut
 from Data_Save import DataSave
@@ -43,16 +44,16 @@ def generate_top_dataset():
                                testing_attack_feature_dict, Constant.EXTENDED_TOP_DATASET_PATH)
 
 
-def generate_stat_dataset():
+def generate_single_stat_dataset(param_feature_type):
     dataset = Dataset()
     dataset.access_dataset(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_OFF)
 
-    stat_feature_engineering_single = STAT_Feature_Engineering_Single()
+    stat_feature_engineering_single = STAT_Feature_Engineering()
     instructions_normal_data_array = \
-        stat_feature_engineering_single.parsing_dataset('instructions', dataset.get_normal_cs_stat_file_list())
+        stat_feature_engineering_single.parsing_dataset(param_feature_type, dataset.get_normal_cs_stat_file_list())
 
     instructions_attack_data_array = \
-        stat_feature_engineering_single.parsing_dataset('instructions', dataset.get_attack_cs_stat_file_list())
+        stat_feature_engineering_single.parsing_dataset(param_feature_type, dataset.get_attack_cs_stat_file_list())
 
     normal_labeled_feature_list = \
         stat_feature_engineering_single.get_combined_mixed_labeled_feature_list(instructions_normal_data_array,
@@ -71,18 +72,27 @@ def generate_stat_dataset():
     return ret_training_feature_array, ret_testing_feature_array, ret_training_label_array, ret_testing_label_array
 
 
+def generate_multiple_stat_dataset():
+    STAT_Feature_Engineering.get_multiple_feature_and_label_array(Constant.SINGLE_STAT_DATASET_PATH)
+
+
 if __name__ == '__main__':
     print('Simulation Start')
+
     # generate_top_dataset()
     # consensus = Consensus(Constant.CUT_TOP_DATASET_PATH)
     # consensus.knn()
     # consensus.k_means()
-    #
     # consensus = Consensus(Constant.EXTENDED_TOP_DATASET_PATH)
     # consensus.knn()
     # consensus.k_means()
 
-    training_feature_array, testing_feature_array, training_label_array, testing_label_array = generate_stat_dataset()
-    Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
-    Consensus.k_means(testing_feature_array, testing_label_array)
+    # training_feature_array, testing_feature_array, training_label_array, testing_label_array = \
+    #     generate_single_stat_dataset('instructions')
+    # DataSave.save_stat_features(training_feature_array, training_label_array, testing_feature_array,
+    #                             testing_label_array, 'instructions')
+    # Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
+    # Consensus.k_means(testing_feature_array, testing_label_array)
+
+    generate_multiple_stat_dataset()
     print('Simulation End')

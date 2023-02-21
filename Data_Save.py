@@ -343,3 +343,19 @@ class DataSave:
                                              index=False)
             testing_attack_feature_df.to_csv(Constant.CUT_TOP_DATASET_PATH + '/testing_attack_feature.csv',
                                              index=False)
+
+    @classmethod
+    def save_stat_features(cls, training_feature_array, training_label_array, testing_feature_array,
+                           testing_label_array, feature_type):
+        df = pd.DataFrame(training_feature_array)
+        df.to_csv(Constant.SINGLE_STAT_DATASET_PATH + '/training_combined_' + feature_type + '_feature.csv',
+                  index=False)
+        df = pd.DataFrame(training_label_array)
+        df.to_csv(Constant.SINGLE_STAT_DATASET_PATH + '/training_combined_' + feature_type + '_label.csv', index=False)
+
+        df = pd.DataFrame(testing_feature_array)
+        df.to_csv(Constant.SINGLE_STAT_DATASET_PATH + '/testing_combined_' + feature_type + '_feature.csv',
+                  index=False)
+        df = pd.DataFrame(testing_label_array)
+        df.to_csv(Constant.SINGLE_STAT_DATASET_PATH + '/testing_combined_' + feature_type + '_label.csv', index=False)
+

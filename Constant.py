@@ -36,3 +36,5 @@ EXTENDED_TOP_DATASET_PATH = 'Final_dataset/TOP/Extend'
 CUT_TOP_DATASET_PATH = 'Final_dataset/TOP/Cut'
 
 FEATURE_EPOCH = 20000
+
+SINGLE_STAT_DATASET_PATH = 'Final_dataset/STAT/Single'
