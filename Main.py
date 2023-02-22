@@ -44,7 +44,7 @@ def generate_top_dataset():
                                testing_attack_feature_dict, Constant.EXTENDED_TOP_DATASET_PATH)
 
 
-def generate_single_stat_dataset(param_feature_type):
+def save_raw_stat_dataset(param_feature_type):
     dataset = Dataset()
     dataset.access_dataset(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_OFF)
 
@@ -62,18 +62,15 @@ def generate_single_stat_dataset(param_feature_type):
         stat_feature_engineering_single.get_combined_mixed_labeled_feature_list(instructions_attack_data_array,
                                                                                 Constant.ATTACK)
 
-    total_feature_list, total_label_list = \
-        stat_feature_engineering_single.get_randomly_mixed_feature_array(normal_labeled_feature_list,
-                                                                         attack_labeled_feature_list)
+    total_feature_array, total_label_array = \
+        stat_feature_engineering_single.get_mixed_feature_array(normal_labeled_feature_list,
+                                                                attack_labeled_feature_list)
 
-    ret_training_feature_array, ret_testing_feature_array, ret_training_label_array, ret_testing_label_array = \
-        stat_feature_engineering_single.divide_training_and_testing_feature_array(total_feature_list, total_label_list)
-
-    return ret_training_feature_array, ret_testing_feature_array, ret_training_label_array, ret_testing_label_array
+    DataSave.save_stat_raw_feature(total_feature_array, total_label_array, param_feature_type)
 
 
-def generate_multiple_stat_dataset():
-    STAT_Feature_Engineering.get_multiple_feature_and_label_array(Constant.SINGLE_STAT_DATASET_PATH)
+def extract_raw_stat_dataset(param_chosen_feature_list):
+    STAT_Feature_Engineering.get_feature_and_label_array(Constant.RAW_STAT_DATASET_PATH, param_chosen_feature_list)
 
 
 if __name__ == '__main__':
@@ -87,12 +84,14 @@ if __name__ == '__main__':
     # consensus.knn()
     # consensus.k_means()
 
-    # training_feature_array, testing_feature_array, training_label_array, testing_label_array = \
-    #     generate_single_stat_dataset('instructions')
-    # DataSave.save_stat_features(training_feature_array, training_label_array, testing_feature_array,
-    #                             testing_label_array, 'instructions')
+    chosen_feature_list = Constant.LIST_SEQUENCE
+    for feature_type in chosen_feature_list:
+        save_raw_stat_dataset(feature_type)
+
+    extract_raw_stat_dataset(chosen_feature_list)
+
     # Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
     # Consensus.k_means(testing_feature_array, testing_label_array)
 
-    generate_multiple_stat_dataset()
+    # generate_multiple_stat_dataset()
     print('Simulation End')

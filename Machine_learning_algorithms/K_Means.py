@@ -1,4 +1,4 @@
-
+import numpy as np
 from sklearn.cluster import KMeans
 from sklearn.metrics import classification_report
 
@@ -14,7 +14,7 @@ class K_Means:
         kmc.fit(testing_data_array)
         label_kmc = kmc.labels_
 
-        class_report = classification_report(testing_label_array, label_kmc, output_dict=True)
+        class_report = classification_report(testing_label_array, label_kmc, output_dict=True, zero_division=0)
         weighted_avg = class_report['weighted avg']
         f1_score = weighted_avg['f1-score']
         print('f1-score: ', f1_score)

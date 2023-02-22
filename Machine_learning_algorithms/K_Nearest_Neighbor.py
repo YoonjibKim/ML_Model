@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.metrics import classification_report
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.preprocessing import StandardScaler
@@ -16,5 +17,5 @@ class KNN:
         clf_knn.fit(X_tn_std, training_label_array)
         knn_pred = clf_knn.predict(X_te_std)
 
-        class_report = classification_report(testing_label_array, knn_pred)
+        class_report = classification_report(testing_label_array, knn_pred, zero_division=0)
         print(class_report)

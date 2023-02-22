@@ -63,15 +63,13 @@ class STAT_Feature_Engineering:
         return feature_list
 
     @classmethod
-    def get_randomly_mixed_feature_array(cls, normal_feature_list, attack_feature_list):
+    def get_mixed_feature_array(cls, normal_feature_list, attack_feature_list):
         total_feature_list = []
         for normal_feature in normal_feature_list:
             total_feature_list.append(normal_feature)
 
         for attack_feature in attack_feature_list:
             total_feature_list.append(attack_feature)
-
-        np.random.shuffle(total_feature_list)
 
         total_label_list = []
         label_index = len(total_feature_list[0]) - 1
@@ -80,19 +78,6 @@ class STAT_Feature_Engineering:
             total_label_list.append(label)
 
         return np.array(total_feature_list), np.array(total_label_list)
-
-    @classmethod
-    def divide_training_and_testing_feature_array(cls, feature_array, label_array):
-        total_size = len(label_array)
-        training_size = round(total_size * 0.75)
-        testing_size = round(total_size * 0.25)
-
-        training_feature_array = feature_array[:training_size]
-        testing_feature_array = feature_array[:testing_size]
-        training_label_array = label_array[:training_size]
-        testing_label_array = label_array[:testing_size]
-
-        return training_feature_array, testing_feature_array, training_label_array, testing_label_array
 
     @classmethod
     def __read_csv(cls, path):
@@ -115,65 +100,47 @@ class STAT_Feature_Engineering:
         return file_name_list
 
     @classmethod
-    def get_multiple_feature_and_label_array(cls, root_path):
-        file_name_list = cls.__get_file_names(root_path)
+    def get_feature_and_label_array(cls, root_path, chosen_feature_list):
+        feature_size = 0
+        cycles_feature_list = []
+        instructions_feature_list = []
+        branch_feature_list = []
 
-        training_total_cycles_feature_list = []
-        training_total_instructions_feature_list = []
-        training_total_total_branch_feature_list = []
-        training_total_cycles_label_list = []
-        training_total_instructions_label_list = []
-        training_total_branch_label_list = []
+        for chosen_feature in chosen_feature_list:
+            if chosen_feature == Constant.LIST_SEQUENCE[0]:  # cycles
+                cycles_feature_list = cls.__read_csv(root_path + '/raw_cycles_feature.csv')
+                cycles_feature_list = cycles_feature_list[1:]
+                cycles_label_list = cls.__read_csv(root_path + '/raw_cycles_label.csv')
+                cycles_label_list = cycles_label_list[1:]
+                feature_size = len(cycles_feature_list)
+            elif chosen_feature == Constant.LIST_SEQUENCE[1]:  # instructions
+                instructions_feature_list = cls.__read_csv(root_path + '/raw_instructions_feature.csv')
+                instructions_feature_list = instructions_feature_list[1:]
+                instructions_label_list = cls.__read_csv(root_path + '/raw_instructions_label.csv')
+                instructions_label_list = instructions_label_list[1:]
+                feature_size = len(instructions_feature_list)
+            elif chosen_feature == Constant.LIST_SEQUENCE[2]:  # branch
+                branch_feature_list = cls.__read_csv(root_path + '/raw_branch_feature.csv')
+                branch_feature_list = branch_feature_list[1:]
+                branch_label_list = cls.__read_csv(root_path + '/raw_branch_label.csv')
+                branch_label_list = branch_label_list[1:]
+                feature_size = len(branch_feature_list)
 
-        testing_total_cycles_feature_list = []
-        testing_total_instructions_feature_list = []
-        testing_total_branch_feature_list = []
-        testing_total_cycles_label_list = []
-        testing_total_instructions_label_list = []
-        testing_total_branch_label_list = []
+        combined_feature_list = []
+        for index in range(0, feature_size):
+            record_list = []
+            for chosen_feature in chosen_feature_list:
+                if chosen_feature == Constant.LIST_SEQUENCE[0]:  # cycles
+                    temp_list = cycles_feature_list[index]
+                    record_list.extend(temp_list)
+                elif chosen_feature == Constant.LIST_SEQUENCE[1]:  # instructions
+                    temp_list = instructions_feature_list[index]
+                    record_list.extend(temp_list)
+                elif chosen_feature == Constant.LIST_SEQUENCE[2]:  # branch
+                    temp_list = branch_feature_list[index]
+                    record_list.extend(temp_list)
 
-        for file_name in file_name_list:
-            split_file_name_list = file_name.split('_')
-            if split_file_name_list[0] == 'training':
-                if split_file_name_list[3] == 'feature.csv':
-                    if split_file_name_list[2] == Constant.LIST_SEQUENCE[0]:  # cycles
-                        cycles_feature_list = cls.__read_csv(root_path + '/' + file_name)
-                        training_total_cycles_feature_list = cycles_feature_list[1:]
-                    elif split_file_name_list[2] == Constant.LIST_SEQUENCE[1]:  # instructions
-                        instructions_feature_list = cls.__read_csv(root_path + '/' + file_name)
-                        training_total_instructions_feature_list = instructions_feature_list[1:]
-                    elif split_file_name_list[2] == Constant.LIST_SEQUENCE[2]:  # branch
-                        branch_feature_list = cls.__read_csv(root_path + '/' + file_name)
-                        training_total_total_branch_feature_list = branch_feature_list[1:]
-                elif split_file_name_list[3] == 'label.csv':
-                    if split_file_name_list[2] == Constant.LIST_SEQUENCE[0]:  # cycles
-                        cycles_label_list = cls.__read_csv(root_path + '/' + file_name)
-                        training_total_cycles_label_list = cycles_label_list[1:]
-                    elif split_file_name_list[2] == Constant.LIST_SEQUENCE[1]:  # instructions
-                        instructions_label_list = cls.__read_csv(root_path + '/' + file_name)
-                        training_total_instructions_label_list = instructions_label_list[1:]
-                    elif split_file_name_list[2] == Constant.LIST_SEQUENCE[2]:  # branch
-                        branch_label_list = cls.__read_csv(root_path + '/' + file_name)
-                        training_total_branch_label_list = branch_label_list[1:]
-            if split_file_name_list[0] == 'testing':
-                if split_file_name_list[3] == 'feature.csv':
-                    if split_file_name_list[2] == Constant.LIST_SEQUENCE[0]:  # cycles
-                        cycles_feature_list = cls.__read_csv(root_path + '/' + file_name)
-                        testing_total_cycles_feature_list = cycles_feature_list[1:]
-                    elif split_file_name_list[2] == Constant.LIST_SEQUENCE[1]:  # instructions
-                        instructions_feature_list = cls.__read_csv(root_path + '/' + file_name)
-                        testing_total_instructions_feature_list = instructions_feature_list[1:]
-                    elif split_file_name_list[2] == Constant.LIST_SEQUENCE[2]:  # branch
-                        branch_feature_list = cls.__read_csv(root_path + '/' + file_name)
-                        testing_total_branch_feature_list = branch_feature_list[1:]
-                elif split_file_name_list[3] == 'label.csv':
-                    if split_file_name_list[2] == Constant.LIST_SEQUENCE[0]:  # cycles
-                        cycles_label_list = cls.__read_csv(root_path + '/' + file_name)
-                        testing_total_cycles_label_list = cycles_label_list[1:]
-                    elif split_file_name_list[2] == Constant.LIST_SEQUENCE[1]:  # instructions
-                        instructions_label_list = cls.__read_csv(root_path + '/' + file_name)
-                        testing_total_instructions_label_list = instructions_label_list[1:]
-                    elif split_file_name_list[2] == Constant.LIST_SEQUENCE[2]:  # branch
-                        branch_label_list = cls.__read_csv(root_path + '/' + file_name)
-                        testing_total_branch_label_list = branch_label_list[1:]
+            combined_feature_list.append(record_list)
+
+        print(combined_feature_list)
 
