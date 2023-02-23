@@ -37,5 +37,5 @@ CUT_TOP_DATASET_PATH = 'Final_dataset/TOP/Cut'
 
 FEATURE_EPOCH = 20000
 
-SINGLE_STAT_DATASET_PATH = 'Final_dataset/STAT/Single'
+PROCESS_STAT_DATASET_PATH = 'Final_dataset/STAT/Process'
 RAW_STAT_DATASET_PATH = 'Final_dataset/STAT/Raw'

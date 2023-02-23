@@ -70,7 +70,15 @@ def save_raw_stat_dataset(param_feature_type):
 
 
 def extract_raw_stat_dataset(param_chosen_feature_list):
-    STAT_Feature_Engineering.get_feature_and_label_array(Constant.RAW_STAT_DATASET_PATH, param_chosen_feature_list)
+    combined_feature_list, combined_label_list = \
+        STAT_Feature_Engineering.get_feature_and_label_array(Constant.RAW_STAT_DATASET_PATH, param_chosen_feature_list)
+    ret_training_feature_array, ret_training_label_array, ret_testing_feature_array, ret_testing_label_array = \
+        STAT_Feature_Engineering.divide_training_and_testing_features(combined_feature_list, combined_label_list)
+
+    DataSave.save_stat_processed_feature(ret_training_feature_array, ret_training_label_array,
+                                         ret_testing_feature_array, ret_testing_label_array)
+
+    return ret_training_feature_array, ret_training_label_array, ret_testing_feature_array, ret_testing_label_array
 
 
 if __name__ == '__main__':
@@ -88,10 +96,10 @@ if __name__ == '__main__':
     for feature_type in chosen_feature_list:
         save_raw_stat_dataset(feature_type)
 
-    extract_raw_stat_dataset(chosen_feature_list)
+    training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
+        extract_raw_stat_dataset(chosen_feature_list)
 
-    # Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
-    # Consensus.k_means(testing_feature_array, testing_label_array)
+    Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
+    Consensus.k_means(testing_feature_array, testing_label_array)
 
-    # generate_multiple_stat_dataset()
     print('Simulation End')

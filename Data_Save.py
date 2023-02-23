@@ -345,24 +345,21 @@ class DataSave:
                                              index=False)
 
     @classmethod
-    def save_stat_single_feature(cls, training_feature_array, training_label_array, testing_feature_array,
-                                 testing_label_array, feature_type):
+    def save_stat_processed_feature(cls, training_feature_array, training_label_array, testing_feature_array,
+                                    testing_label_array):
         df = pd.DataFrame(training_feature_array)
-        df.to_csv(Constant.SINGLE_STAT_DATASET_PATH + '/training_combined_' + feature_type + '_feature.csv',
-                  index=False)
+        df.to_csv(Constant.PROCESS_STAT_DATASET_PATH + '/training_processed_feature.csv', index=False, header=False)
         df = pd.DataFrame(training_label_array)
-        df.to_csv(Constant.SINGLE_STAT_DATASET_PATH + '/training_combined_' + feature_type + '_label.csv', index=False)
-
+        df.to_csv(Constant.PROCESS_STAT_DATASET_PATH + '/training_processed_label.csv', index=False, header=False)
         df = pd.DataFrame(testing_feature_array)
-        df.to_csv(Constant.SINGLE_STAT_DATASET_PATH + '/testing_combined_' + feature_type + '_feature.csv',
-                  index=False)
+        df.to_csv(Constant.PROCESS_STAT_DATASET_PATH + '/testing_processed_feature.csv', index=False, header=False)
         df = pd.DataFrame(testing_label_array)
-        df.to_csv(Constant.SINGLE_STAT_DATASET_PATH + '/testing_combined_' + feature_type + '_label.csv', index=False)
+        df.to_csv(Constant.PROCESS_STAT_DATASET_PATH + '/testing_processed_label.csv', index=False, header=False)
 
     @classmethod
     def save_stat_raw_feature(cls, feature_array, label_array, feature_type):
         df = pd.DataFrame(feature_array)
-        df.to_csv(Constant.RAW_STAT_DATASET_PATH + '/raw_' + feature_type + '_feature.csv', index=False)
+        df.to_csv(Constant.RAW_STAT_DATASET_PATH + '/raw_' + feature_type + '_feature.csv', index=False, header=False)
 
         df = pd.DataFrame(label_array)
-        df.to_csv(Constant.RAW_STAT_DATASET_PATH + '/raw_' + feature_type + '_label.csv', index=False)
+        df.to_csv(Constant.RAW_STAT_DATASET_PATH + '/raw_' + feature_type + '_label.csv', index=False, header=False)

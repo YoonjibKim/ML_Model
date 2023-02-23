@@ -105,25 +105,23 @@ class STAT_Feature_Engineering:
         cycles_feature_list = []
         instructions_feature_list = []
         branch_feature_list = []
+        combined_label_list = []
 
         for chosen_feature in chosen_feature_list:
             if chosen_feature == Constant.LIST_SEQUENCE[0]:  # cycles
                 cycles_feature_list = cls.__read_csv(root_path + '/raw_cycles_feature.csv')
-                cycles_feature_list = cycles_feature_list[1:]
                 cycles_label_list = cls.__read_csv(root_path + '/raw_cycles_label.csv')
-                cycles_label_list = cycles_label_list[1:]
+                combined_label_list = cycles_label_list
                 feature_size = len(cycles_feature_list)
             elif chosen_feature == Constant.LIST_SEQUENCE[1]:  # instructions
                 instructions_feature_list = cls.__read_csv(root_path + '/raw_instructions_feature.csv')
-                instructions_feature_list = instructions_feature_list[1:]
                 instructions_label_list = cls.__read_csv(root_path + '/raw_instructions_label.csv')
-                instructions_label_list = instructions_label_list[1:]
+                combined_label_list = instructions_label_list
                 feature_size = len(instructions_feature_list)
             elif chosen_feature == Constant.LIST_SEQUENCE[2]:  # branch
                 branch_feature_list = cls.__read_csv(root_path + '/raw_branch_feature.csv')
-                branch_feature_list = branch_feature_list[1:]
                 branch_label_list = cls.__read_csv(root_path + '/raw_branch_label.csv')
-                branch_label_list = branch_label_list[1:]
+                combined_label_list = branch_label_list
                 feature_size = len(branch_feature_list)
 
         combined_feature_list = []
@@ -142,5 +140,37 @@ class STAT_Feature_Engineering:
 
             combined_feature_list.append(record_list)
 
-        print(combined_feature_list)
+        return combined_feature_list, combined_label_list
 
+    @classmethod
+    def divide_training_and_testing_features(cls, feature_list, label_list):
+        mixed_list = []
+        for index, feature in enumerate(feature_list):
+            temp_list = []
+            temp_list.extend(feature)
+            temp_list.extend(label_list[index])
+            mixed_list.append(temp_list)
+
+        np.random.shuffle(mixed_list)
+
+        feature_size = len(mixed_list)
+        training_size = round(feature_size * 0.75)
+        testing_size = round(feature_size * 0.25)
+
+        training_feature_list = []
+        training_label_list = []
+        label_index = len(mixed_list[0]) - 1
+        for index in range(0, training_size):
+            temp_list = [int(data) for data in mixed_list[index][:-1]]
+            training_feature_list.append(temp_list)
+            training_label_list.append([int(mixed_list[index][label_index])])
+
+        testing_feature_list = []
+        testing_label_list = []
+        for index in range(training_size, training_size + testing_size):
+            temp_list = [int(data) for data in mixed_list[index][:-1]]
+            testing_feature_list.append(temp_list)
+            testing_label_list.append([int(mixed_list[index][label_index])])
+
+        return np.array(training_feature_list), np.array(training_label_list), np.array(testing_feature_list), \
+            np.array(testing_label_list)
