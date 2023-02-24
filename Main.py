@@ -46,7 +46,7 @@ def generate_top_dataset():
 
 def save_raw_stat_dataset(param_feature_type):
     dataset = Dataset()
-    dataset.access_dataset(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_OFF, Constant.GAUSSIAN_ON)
+    dataset.access_dataset(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_ON)
 
     stat_feature_engineering_single = STAT_Feature_Engineering()
     normal_data_array = \
@@ -92,7 +92,8 @@ if __name__ == '__main__':
     # consensus.knn()
     # consensus.k_means()
 
-    chosen_feature_list = [Constant.LIST_SEQUENCE[0], Constant.LIST_SEQUENCE[1], Constant.LIST_SEQUENCE[2]]
+    # chosen_feature_list = Constant.LIST_SEQUENCE
+    chosen_feature_list = [Constant.LIST_SEQUENCE[2]]
     for feature_type in chosen_feature_list:
         save_raw_stat_dataset(feature_type)
 
