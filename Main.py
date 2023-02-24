@@ -46,20 +46,20 @@ def generate_top_dataset():
 
 def save_raw_stat_dataset(param_feature_type):
     dataset = Dataset()
-    dataset.access_dataset(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_OFF)
+    dataset.access_dataset(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_OFF, Constant.GAUSSIAN_ON)
 
     stat_feature_engineering_single = STAT_Feature_Engineering()
-    instructions_normal_data_array = \
+    normal_data_array = \
         stat_feature_engineering_single.parsing_dataset(param_feature_type, dataset.get_normal_cs_stat_file_list())
 
-    instructions_attack_data_array = \
+    attack_data_array = \
         stat_feature_engineering_single.parsing_dataset(param_feature_type, dataset.get_attack_cs_stat_file_list())
 
     normal_labeled_feature_list = \
-        stat_feature_engineering_single.get_combined_mixed_labeled_feature_list(instructions_normal_data_array,
+        stat_feature_engineering_single.get_combined_mixed_labeled_feature_list(normal_data_array,
                                                                                 Constant.NORMAL)
     attack_labeled_feature_list = \
-        stat_feature_engineering_single.get_combined_mixed_labeled_feature_list(instructions_attack_data_array,
+        stat_feature_engineering_single.get_combined_mixed_labeled_feature_list(attack_data_array,
                                                                                 Constant.ATTACK)
 
     total_feature_array, total_label_array = \
@@ -92,7 +92,7 @@ if __name__ == '__main__':
     # consensus.knn()
     # consensus.k_means()
 
-    chosen_feature_list = Constant.LIST_SEQUENCE
+    chosen_feature_list = [Constant.LIST_SEQUENCE[0], Constant.LIST_SEQUENCE[1], Constant.LIST_SEQUENCE[2]]
     for feature_type in chosen_feature_list:
         save_raw_stat_dataset(feature_type)
 
