@@ -4,6 +4,7 @@ from Consensus import Consensus
 from STAT_Feature_Engineering import STAT_Feature_Engineering
 from TOP_Feature_Engineering_Extend import TOP_Feature_Engineering_Extend
 from TOP_Feature_Engineering_Cut import TOP_Feature_Engineering_Cut
+from Authentication_Time_Feature_Engineering import Authentication_Time_Feature_Engineering
 from Data_Save import DataSave
 from Dataset import Dataset
 
@@ -84,23 +85,30 @@ def extract_raw_stat_dataset(param_chosen_feature_list):
 if __name__ == '__main__':
     print('Simulation Start')
 
+    # top ml
     # generate_top_dataset()
     # consensus = Consensus(Constant.CUT_TOP_DATASET_PATH)
-    # consensus.knn()
-    # consensus.k_means()
+    # training_data_array, testing_data_array, training_label_array, testing_label_array = consensus.get_ml_features()
+    # consensus.knn(training_data_array, testing_data_array, training_label_array, testing_label_array)
+    # consensus.k_means(testing_data_array, testing_label_array)
     # consensus = Consensus(Constant.EXTENDED_TOP_DATASET_PATH)
-    # consensus.knn()
-    # consensus.k_means()
+    # training_data_array, testing_data_array, training_label_array, testing_label_array = consensus.get_ml_features()
+    # consensus.knn(training_data_array, testing_data_array, training_label_array, testing_label_array)
+    # consensus.k_means(testing_data_array, testing_label_array)
 
+    # stat ml
     # chosen_feature_list = Constant.LIST_SEQUENCE
-    chosen_feature_list = [Constant.LIST_SEQUENCE[2]]
-    for feature_type in chosen_feature_list:
-        save_raw_stat_dataset(feature_type)
+    # chosen_feature_list = [Constant.LIST_SEQUENCE[2]]
+    # for feature_type in chosen_feature_list:
+    #     save_raw_stat_dataset(feature_type)
+    #
+    # training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
+    #     extract_raw_stat_dataset(chosen_feature_list)
+    #
+    # Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
+    # Consensus.k_means(testing_feature_array, testing_label_array)
 
-    training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
-        extract_raw_stat_dataset(chosen_feature_list)
-
-    Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
-    Consensus.k_means(testing_feature_array, testing_label_array)
+    authentication_time_feature_engineering = \
+        Authentication_Time_Feature_Engineering(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_ON)
 
     print('Simulation End')

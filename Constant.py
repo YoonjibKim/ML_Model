@@ -39,3 +39,7 @@ FEATURE_EPOCH = 20000
 
 PROCESS_STAT_DATASET_PATH = 'Final_dataset/STAT/Process'
 RAW_STAT_DATASET_PATH = 'Final_dataset/STAT/Raw'
+
+BEFORE_PARSING_DATASET_PATH = 'Before_parsing_dataset/dataset'
+
+AUTHENTICATION_RESULTS_FILE_NAME = 'authentication_results.csv'

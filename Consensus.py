@@ -79,10 +79,10 @@ class Consensus(KNN, K_Means):
                     temp_list.append(0)
                 cls.__training_normal_label_array = np.array(temp_list)
 
-        cls.__get_ml_features()
+        cls.__set_ml_features()
 
     @classmethod
-    def __get_ml_features(cls):
+    def __set_ml_features(cls):
         cls.__training_data_array = np.append(cls.__training_normal_data_array, cls.__training_attack_data_array,
                                               axis=0)
         cls.__training_label_array = np.append(cls.__training_normal_label_array, cls.__training_attack_label_array,
@@ -91,6 +91,11 @@ class Consensus(KNN, K_Means):
                                              axis=0)
         cls.__testing_label_array = np.append(cls.__testing_normal_label_array, cls.__testing_attack_label_array,
                                               axis=0)
+
+    @classmethod
+    def get_ml_features(cls):
+        return cls.__training_data_array, cls.__testing_data_array, cls.__training_label_array, \
+            cls.__testing_label_array
 
     @classmethod
     def knn(cls, training_data_array, testing_data_array, training_label_array, testing_label_array):
