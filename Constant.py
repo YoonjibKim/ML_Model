@@ -42,4 +42,7 @@ RAW_STAT_DATASET_PATH = 'Final_dataset/STAT/Raw'
 
 BEFORE_PARSING_DATASET_PATH = 'Before_parsing_dataset/dataset'
 
-AUTHENTICATION_RESULTS_FILE_NAME = 'authentication_results.csv'
+CS_ID_PID_FILE_NANE = 'cs_id_pid.csv'
+
+ATTACK_TIME_DIFF_FILE_NANE = 'attack_time_diff.txt'
+NORMAL_TIME_DIFF_FILE_NAME = 'normal_time_diff.txt'
