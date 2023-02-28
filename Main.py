@@ -108,8 +108,17 @@ if __name__ == '__main__':
     # Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
     # Consensus.k_means(testing_feature_array, testing_label_array)
 
+    # time diff ml (one feature)
     authentication_time_feature_engineering = \
         Authentication_Time_Feature_Engineering(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_ON)
 
+    training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
+        authentication_time_feature_engineering.get_features()
+
+    training_feature_array = training_feature_array.reshape(-1, 1)
+    testing_feature_array = testing_feature_array.reshape(-1, 1)
+
+    Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
+    Consensus.k_means(testing_feature_array, testing_label_array)
 
     print('Simulation End')

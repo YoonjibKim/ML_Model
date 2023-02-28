@@ -46,3 +46,6 @@ CS_ID_PID_FILE_NANE = 'cs_id_pid.csv'
 
 ATTACK_TIME_DIFF_FILE_NANE = 'attack_time_diff.txt'
 NORMAL_TIME_DIFF_FILE_NAME = 'normal_time_diff.txt'
+
+TRAINING_FEATURE_RATIO = 0.75
+TESTING_FEATURE_RATIO = 0.25
