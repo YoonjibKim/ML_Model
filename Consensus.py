@@ -2,11 +2,12 @@ import csv
 import os
 import numpy as np
 import Constant
+from Machine_learning_algorithms.DNN import DNN
 from Machine_learning_algorithms.K_Means import K_Means
 from Machine_learning_algorithms.K_Nearest_Neighbor import KNN
 
 
-class Consensus(KNN, K_Means):
+class Consensus(KNN, K_Means, DNN):
     __training_normal_data_array = None
     __training_attack_data_array = None
     __testing_normal_data_array = None
@@ -83,14 +84,18 @@ class Consensus(KNN, K_Means):
 
     @classmethod
     def __set_ml_features(cls):
-        cls.__training_data_array = np.append(cls.__training_normal_data_array, cls.__training_attack_data_array,
-                                              axis=0)
-        cls.__training_label_array = np.append(cls.__training_normal_label_array, cls.__training_attack_label_array,
-                                               axis=0)
-        cls.__testing_data_array = np.append(cls.__testing_normal_data_array, cls.__testing_attack_data_array,
-                                             axis=0)
-        cls.__testing_label_array = np.append(cls.__testing_normal_label_array, cls.__testing_attack_label_array,
-                                              axis=0)
+        training_data_array = np.append(cls.__training_normal_data_array, cls.__training_attack_data_array,
+                                        axis=0)
+        cls.__training_data_array = np.asarray(training_data_array, dtype=float)
+        training_label_array = np.append(cls.__training_normal_label_array, cls.__training_attack_label_array,
+                                         axis=0)
+        cls.__training_label_array = np.asarray(training_label_array, dtype=float)
+        testing_data_array = np.append(cls.__testing_normal_data_array, cls.__testing_attack_data_array,
+                                       axis=0)
+        cls.__testing_data_array = np.asarray(testing_data_array, dtype=float)
+        testing_label_array = np.append(cls.__testing_normal_label_array, cls.__testing_attack_label_array,
+                                        axis=0)
+        cls.__testing_label_array = np.asarray(testing_label_array, dtype=float)
 
     @classmethod
     def get_ml_features(cls):
@@ -98,9 +103,13 @@ class Consensus(KNN, K_Means):
             cls.__testing_label_array
 
     @classmethod
-    def knn(cls, training_data_array, testing_data_array, training_label_array, testing_label_array):
+    def knn(cls, training_data_array, training_label_array, testing_data_array, testing_label_array):
         super().knn_run(training_data_array, training_label_array, testing_data_array, testing_label_array)
 
     @classmethod
     def k_means(cls, testing_data_array, testing_label_array):
         super().k_means_run(testing_data_array, testing_label_array)
+
+    @classmethod
+    def dnn(cls, training_data_array, testing_data_array, training_label_array, testing_label_array):
+        super().dnn_run(training_data_array, training_label_array, testing_data_array, testing_label_array)

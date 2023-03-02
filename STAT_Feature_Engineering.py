@@ -100,7 +100,7 @@ class STAT_Feature_Engineering:
         return file_name_list
 
     @classmethod
-    def get_feature_and_label_array(cls, root_path, chosen_feature_list):
+    def get_feature_and_label_list(cls, root_path, chosen_feature_list):
         feature_size = 0
         cycles_feature_list = []
         instructions_feature_list = []
@@ -140,17 +140,17 @@ class STAT_Feature_Engineering:
 
             combined_feature_list.append(record_list)
 
-        return combined_feature_list, combined_label_list
-
-    @classmethod
-    def divide_training_and_testing_features(cls, feature_list, label_list):
         mixed_list = []
-        for index, feature in enumerate(feature_list):
+        for index, feature in enumerate(combined_feature_list):
             temp_list = []
             temp_list.extend(feature)
-            temp_list.extend(label_list[index])
+            temp_list.extend(combined_label_list[index])
             mixed_list.append(temp_list)
 
+        return mixed_list
+
+    @classmethod
+    def divide_training_and_testing_features(cls, mixed_list):
         np.random.shuffle(mixed_list)
 
         feature_size = len(mixed_list)

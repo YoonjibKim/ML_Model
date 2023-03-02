@@ -58,38 +58,40 @@ class Authentication_Time_Feature_Engineering:
             temp_value = round(diff_value, 3)
             rounded_combined_feature_list.append(temp_value)
 
-        mixed_list = []
+        self.__mixed_list = []
         for index, feature in enumerate(rounded_combined_feature_list):
             temp_list = []
             temp_list.extend([feature])
             temp_list.extend([combined_label_list[index]])
-            mixed_list.append(temp_list)
+            self.__mixed_list.append(temp_list)
 
-        random.shuffle(mixed_list)
-        feature_list_len = len(mixed_list)
+    def get_feature_and_label_list(self):
+        return self.__mixed_list
+
+    def divide_training_and_testing_features(self):
+        random.shuffle(self.__mixed_list)
+        feature_list_len = len(self.__mixed_list)
         training_feature_size = round(Constant.TRAINING_FEATURE_RATIO * feature_list_len)
         testing_feature_size = round(Constant.TESTING_FEATURE_RATIO * feature_list_len)
 
         training_feature_list = []
         training_label_list = []
-        for feature in mixed_list[0:training_feature_size]:
+        for feature in self.__mixed_list[0:training_feature_size]:
             training_feature_list.append(feature[0])
             training_label_list.append(feature[1])
 
         testing_feature_list = []
         testing_label_list = []
-        for feature in mixed_list[-testing_feature_size:]:
+        for feature in self.__mixed_list[-testing_feature_size:]:
             testing_feature_list.append(feature[0])
             testing_label_list.append(feature[1])
 
-        self.__training_feature_array = np.array(training_feature_list)
-        self.__training_label_array = np.array(training_label_list)
-        self.__testing_feature_array = np.array(testing_feature_list)
-        self.__testing_label_array = np.array(testing_label_list)
+        training_feature_array = np.array(training_feature_list)
+        training_label_array = np.array(training_label_list)
+        testing_feature_array = np.array(testing_feature_list)
+        testing_label_array = np.array(testing_label_list)
 
-    def get_features(self):
-        return self.__training_feature_array, self.__training_label_array, self.__testing_feature_array, \
-            self.__testing_label_array
+        return training_feature_array, training_label_array, testing_feature_array, testing_label_array
 
     @classmethod
     def __get_target_cs_authentication_time_diff(cls, attack_time_diff_dict, normal_time_diff_dict,

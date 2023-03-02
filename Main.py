@@ -1,5 +1,6 @@
 import Constant
 import Data_Save
+from Combined_Feature_Engineering import Combined_Feature_Engineering
 from Consensus import Consensus
 from STAT_Feature_Engineering import STAT_Feature_Engineering
 from TOP_Feature_Engineering_Extend import TOP_Feature_Engineering_Extend
@@ -71,10 +72,11 @@ def save_raw_stat_dataset(param_feature_type):
 
 
 def extract_raw_stat_dataset(param_chosen_feature_list):
-    combined_feature_list, combined_label_list = \
-        STAT_Feature_Engineering.get_feature_and_label_array(Constant.RAW_STAT_DATASET_PATH, param_chosen_feature_list)
+    combined_feature_label_list = \
+        STAT_Feature_Engineering.get_feature_and_label_list(Constant.RAW_STAT_DATASET_PATH, param_chosen_feature_list)
+
     ret_training_feature_array, ret_training_label_array, ret_testing_feature_array, ret_testing_label_array = \
-        STAT_Feature_Engineering.divide_training_and_testing_features(combined_feature_list, combined_label_list)
+        STAT_Feature_Engineering.divide_training_and_testing_features(combined_feature_label_list)
 
     DataSave.save_stat_processed_feature(ret_training_feature_array, ret_training_label_array,
                                          ret_testing_feature_array, ret_testing_label_array)
@@ -84,19 +86,19 @@ def extract_raw_stat_dataset(param_chosen_feature_list):
 
 if __name__ == '__main__':
     print('Simulation Start')
-
-    # top ml
     # generate_top_dataset()
-    # consensus = Consensus(Constant.CUT_TOP_DATASET_PATH)
-    # training_data_array, testing_data_array, training_label_array, testing_label_array = consensus.get_ml_features()
-    # consensus.knn(training_data_array, testing_data_array, training_label_array, testing_label_array)
-    # consensus.k_means(testing_data_array, testing_label_array)
-    # consensus = Consensus(Constant.EXTENDED_TOP_DATASET_PATH)
-    # training_data_array, testing_data_array, training_label_array, testing_label_array = consensus.get_ml_features()
-    # consensus.knn(training_data_array, testing_data_array, training_label_array, testing_label_array)
-    # consensus.k_means(testing_data_array, testing_label_array)
 
-    # stat ml
+    # --------------------------------- top ml: cut ---------------------------------
+    # consensus = Consensus(Constant.CUT_TOP_DATASET_PATH)
+    # training_feature_array, testing_feature_array, training_label_array, testing_label_array = \
+    #     consensus.get_ml_features()
+
+    # --------------------------------- top ml: extend ---------------------------------
+    # consensus = Consensus(Constant.EXTENDED_TOP_DATASET_PATH)
+    # training_feature_array, testing_feature_array, training_label_array, testing_label_array = \
+    #     consensus.get_ml_features()
+
+    # --------------------------------- stat ml ---------------------------------
     # chosen_feature_list = Constant.LIST_SEQUENCE
     # chosen_feature_list = [Constant.LIST_SEQUENCE[2]]
     # for feature_type in chosen_feature_list:
@@ -104,21 +106,44 @@ if __name__ == '__main__':
     #
     # training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
     #     extract_raw_stat_dataset(chosen_feature_list)
-    #
-    # Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
-    # Consensus.k_means(testing_feature_array, testing_label_array)
 
-    # time diff ml (one feature)
+    # --------------------------------- time diff ml (one feature) ---------------------------------
+    # authentication_time_feature_engineering = \
+    #     Authentication_Time_Feature_Engineering(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_ON)
+    #
+    # training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
+    #     authentication_time_feature_engineering.divide_training_and_testing_features()
+    #
+    # training_feature_array = training_feature_array.reshape(-1, 1)
+    # testing_feature_array = testing_feature_array.reshape(-1, 1)
+
+    # --------------------------------- stat and time diff ml ---------------------------------
+    # chosen_feature_list = [Constant.LIST_SEQUENCE[2]]
+    chosen_feature_list = Constant.LIST_SEQUENCE
+    stat_mixed_list = \
+        STAT_Feature_Engineering.get_feature_and_label_list(Constant.RAW_STAT_DATASET_PATH, chosen_feature_list)
     authentication_time_feature_engineering = \
         Authentication_Time_Feature_Engineering(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_ON)
+    time_diff_mixed_list = authentication_time_feature_engineering.get_feature_and_label_list()
+
+    combined_feature_engineering = Combined_Feature_Engineering()
+    stat_attack_list, stat_normal_list = combined_feature_engineering.divide_attack_and_normal_features(stat_mixed_list)
+    time_diff_attack_list, time_diff_normal_list = \
+        combined_feature_engineering.divide_attack_and_normal_features(time_diff_mixed_list)
+
+    stat_same_length_attack_list, time_diff_same_length_attack_list = \
+        combined_feature_engineering.make_same_feature_length(stat_attack_list, time_diff_attack_list)
+    stat_same_length_normal_list, time_diff_same_length_normal_list = \
+        combined_feature_engineering.make_same_feature_length(stat_normal_list, time_diff_normal_list)
 
     training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
-        authentication_time_feature_engineering.get_features()
+        combined_feature_engineering.get_training_and_testing_feature_array(stat_same_length_attack_list,
+                                                                            time_diff_same_length_attack_list,
+                                                                            stat_same_length_normal_list,
+                                                                            time_diff_same_length_normal_list)
 
-    training_feature_array = training_feature_array.reshape(-1, 1)
-    testing_feature_array = testing_feature_array.reshape(-1, 1)
-
-    Consensus.knn(training_feature_array, testing_feature_array, training_label_array, testing_label_array)
+    Consensus.knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
     Consensus.k_means(testing_feature_array, testing_label_array)
+    Consensus.dnn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
 
     print('Simulation End')
