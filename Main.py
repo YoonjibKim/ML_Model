@@ -12,9 +12,9 @@ from Data_Save import DataSave
 from Dataset import Dataset
 
 
-def generate_top_dataset():
+def generate_top_dataset(param_scenario):
     dataset = Dataset()
-    dataset.access_dataset(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_OFF)
+    dataset.access_dataset(param_scenario[0], param_scenario[1], param_scenario[2])
     DataSave.save_gs_top_features_to_storage(dataset)
     DataSave.save_cs_top_features_to_storage(dataset)
 
@@ -48,9 +48,9 @@ def generate_top_dataset():
                                testing_attack_feature_dict, Constant.EXTENDED_TOP_DATASET_PATH)
 
 
-def save_raw_stat_dataset(param_feature_type):
+def save_raw_stat_dataset(param_feature_type, param_scenario):
     dataset = Dataset()
-    dataset.access_dataset(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_ON)
+    dataset.access_dataset(param_scenario[0], param_scenario[1], param_scenario[2])
 
     stat_feature_engineering_single = STAT_Feature_Engineering()
     normal_data_array = \
@@ -86,32 +86,45 @@ def extract_raw_stat_dataset(param_chosen_feature_list):
     return ret_training_feature_array, ret_training_label_array, ret_testing_feature_array, ret_testing_label_array
 
 
+def calculate_feature_size(param_feature_array):
+    normal_count = 0
+    attack_count = 0
+    for i in param_feature_array:
+        if i == Constant.NORMAL_LABEL:
+            normal_count += 1
+        else:
+            attack_count += 1
+
+    return normal_count, attack_count
+
+
 if __name__ == '__main__':
     print('Simulation Start')
-    # generate_top_dataset()
+    scenario = [Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_OFF]
+    # generate_top_dataset(scenario)
 
     # --------------------------------- top ml: cut ---------------------------------
     # consensus = Consensus(Constant.CUT_TOP_DATASET_PATH)
     # training_feature_array, testing_feature_array, training_label_array, testing_label_array = \
-    #     consensus.get_ml_features()
+    #     consensus.get_ml_training_and_testing_features()
 
     # --------------------------------- top ml: extend ---------------------------------
     # consensus = Consensus(Constant.EXTENDED_TOP_DATASET_PATH)
     # training_feature_array, testing_feature_array, training_label_array, testing_label_array = \
-    #     consensus.get_ml_features()
+    #     consensus.get_ml_training_and_testing_features()
 
     # --------------------------------- stat ml ---------------------------------
     # chosen_feature_list = Constant.LIST_SEQUENCE
     # chosen_feature_list = [Constant.LIST_SEQUENCE[2]]
     # for feature_type in chosen_feature_list:
-    #     save_raw_stat_dataset(feature_type)
+    #     save_raw_stat_dataset(feature_type, scenario)
     #
     # training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
     #     extract_raw_stat_dataset(chosen_feature_list)
 
     # --------------------------------- time diff ml (one feature) ---------------------------------
     # authentication_time_feature_engineering = \
-    #     Authentication_Time_Feature_Engineering(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_ON)
+    #     Authentication_Time_Feature_Engineering(scenario[0], scenario[1], scenario[2])
     #
     # training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
     #     authentication_time_feature_engineering.divide_training_and_testing_features()
@@ -125,7 +138,7 @@ if __name__ == '__main__':
     # stat_mixed_list = \
     #     STAT_Feature_Engineering.get_feature_and_label_list(Constant.RAW_STAT_DATASET_PATH, chosen_feature_list)
     # authentication_time_feature_engineering = \
-    #     Authentication_Time_Feature_Engineering(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_ON)
+    #     Authentication_Time_Feature_Engineering(scenario[0], scenario[1], scenario[2])
     # time_diff_mixed_list = authentication_time_feature_engineering.get_feature_and_label_list()
     #
     # combined_feature_engineering = Combined_Feature_Engineering()
@@ -150,7 +163,7 @@ if __name__ == '__main__':
     stat_mixed_list = \
         STAT_Feature_Engineering.get_feature_and_label_list(Constant.RAW_STAT_DATASET_PATH, chosen_feature_list)
     authentication_time_feature_engineering = \
-        Authentication_Time_Feature_Engineering(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_ON)
+        Authentication_Time_Feature_Engineering(scenario[0], scenario[1], scenario[2])
     time_diff_mixed_list = authentication_time_feature_engineering.get_feature_and_label_list()
 
     combined_feature_engineering = Combined_Feature_Engineering()
@@ -203,10 +216,19 @@ if __name__ == '__main__':
                                                                             time_diff_attack_list,
                                                                             top_stat_normal_list,
                                                                             time_diff_normal_list)
+    #
+    # # --------------------------------- ML ---------------------------------
+    ret_normal_count, ret_attack_count = calculate_feature_size(training_label_array)
+    print('training normal count: ', ret_normal_count)
+    print('training attack count: ', ret_attack_count)
+    print('training total count: ', len(training_label_array))
+    ret_normal_count, ret_attack_count = calculate_feature_size(testing_label_array)
+    print('testing normal count: ', ret_normal_count)
+    print('testing attack count: ', ret_attack_count)
+    print('testing total count: ', len(testing_label_array))
 
-    # --------------------------------- ML ---------------------------------
-    Consensus.knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-    Consensus.k_means(testing_feature_array, testing_label_array)
-    Consensus.dnn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+    # Consensus.knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+    # Consensus.k_means(testing_feature_array, testing_label_array)
+    # Consensus.dnn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
 
     print('Simulation End')

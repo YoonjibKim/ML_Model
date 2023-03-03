@@ -677,7 +677,7 @@ class TOP_Feature_Engineering_Cut:
         symbol_list = []
         for symbol, data_points in data_dict.items():
             data_size = len(data_points)
-            if data_size > avg:
+            if data_size >= avg:
                 symbol_list.append(symbol)
 
         return symbol_list
