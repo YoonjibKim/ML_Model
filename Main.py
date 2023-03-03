@@ -1,3 +1,5 @@
+import numpy as np
+
 import Constant
 import Data_Save
 from Combined_Feature_Engineering import Combined_Feature_Engineering
@@ -119,6 +121,31 @@ if __name__ == '__main__':
 
     # --------------------------------- stat and time diff ml ---------------------------------
     # chosen_feature_list = [Constant.LIST_SEQUENCE[2]]
+    # chosen_feature_list = Constant.LIST_SEQUENCE
+    # stat_mixed_list = \
+    #     STAT_Feature_Engineering.get_feature_and_label_list(Constant.RAW_STAT_DATASET_PATH, chosen_feature_list)
+    # authentication_time_feature_engineering = \
+    #     Authentication_Time_Feature_Engineering(Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_ON)
+    # time_diff_mixed_list = authentication_time_feature_engineering.get_feature_and_label_list()
+    #
+    # combined_feature_engineering = Combined_Feature_Engineering()
+    # stat_attack_list, stat_normal_list = combined_feature_engineering.divide_attack_and_normal_features(stat_mixed_list)
+    # time_diff_attack_list, time_diff_normal_list = \
+    #     combined_feature_engineering.divide_attack_and_normal_features(time_diff_mixed_list)
+    #
+    # stat_same_length_attack_list, time_diff_same_length_attack_list = \
+    #     combined_feature_engineering.make_same_feature_length(stat_attack_list, time_diff_attack_list)
+    # stat_same_length_normal_list, time_diff_same_length_normal_list = \
+    #     combined_feature_engineering.make_same_feature_length(stat_normal_list, time_diff_normal_list)
+    #
+    # training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
+    #     combined_feature_engineering.get_training_and_testing_feature_array(stat_same_length_attack_list,
+    #                                                                         time_diff_same_length_attack_list,
+    #                                                                         stat_same_length_normal_list,
+    #                                                                         time_diff_same_length_normal_list)
+
+    # --------------------------------- total feature combinations ---------------------------------
+    # chosen_feature_list = [Constant.LIST_SEQUENCE[2]]
     chosen_feature_list = Constant.LIST_SEQUENCE
     stat_mixed_list = \
         STAT_Feature_Engineering.get_feature_and_label_list(Constant.RAW_STAT_DATASET_PATH, chosen_feature_list)
@@ -128,20 +155,56 @@ if __name__ == '__main__':
 
     combined_feature_engineering = Combined_Feature_Engineering()
     stat_attack_list, stat_normal_list = combined_feature_engineering.divide_attack_and_normal_features(stat_mixed_list)
-    time_diff_attack_list, time_diff_normal_list = \
+    _time_diff_attack_list, _time_diff_normal_list = \
         combined_feature_engineering.divide_attack_and_normal_features(time_diff_mixed_list)
 
-    stat_same_length_attack_list, time_diff_same_length_attack_list = \
-        combined_feature_engineering.make_same_feature_length(stat_attack_list, time_diff_attack_list)
-    stat_same_length_normal_list, time_diff_same_length_normal_list = \
-        combined_feature_engineering.make_same_feature_length(stat_normal_list, time_diff_normal_list)
+    consensus = Consensus(Constant.CUT_TOP_DATASET_PATH)
+    top_attack_feature_list, top_normal_feature_list = consensus.divide_attack_and_normal_features()
+
+    _top_same_length_normal_list, time_diff_same_length_normal_list = \
+        combined_feature_engineering.make_same_feature_length(top_normal_feature_list, _time_diff_normal_list)
+    _top_same_length_attack_list, time_diff_same_length_attack_list = \
+        combined_feature_engineering.make_same_feature_length(top_attack_feature_list, _time_diff_attack_list)
+
+    top_same_length_normal_list, stat_same_length_normal_list = \
+        combined_feature_engineering.make_same_feature_length(top_normal_feature_list,
+                                                              stat_normal_list)
+    top_same_length_attack_list, stat_same_length_attack_list = \
+        combined_feature_engineering.make_same_feature_length(top_attack_feature_list,
+                                                              stat_attack_list)
+
+    size_list = [len(top_same_length_normal_list), len(stat_same_length_normal_list), len(stat_same_length_normal_list)]
+    size_list = sorted(size_list)
+    min_size = size_list[0]
+
+    top_attack_list = top_same_length_attack_list[0:min_size]
+    top_normal_list = top_same_length_normal_list[0:min_size]
+    stat_attack_list = stat_same_length_attack_list[0:min_size]
+    stat_normal_list = stat_same_length_normal_list[0:min_size]
+    time_diff_attack_list = time_diff_same_length_attack_list[0:min_size]
+    time_diff_normal_list = time_diff_same_length_normal_list[0:min_size]
+
+    temp_top_attack_list = []
+    for record in top_attack_list:
+        temp_top_attack_list.append(record[:-1])
+    temp_top_normal_list = []
+    for record in top_normal_list:
+        temp_top_normal_list.append(record[:-1])
+
+    top_attack_array = np.array(temp_top_attack_list)
+    top_normal_array = np.array(temp_top_normal_list)
+    stat_attack_array = np.array(stat_attack_list)
+    stat_normal_array = np.array(stat_normal_list)
+    top_stat_attack_list = list(np.append(top_attack_array, stat_attack_array, axis=1))
+    top_stat_normal_list = list(np.append(top_normal_array, stat_normal_array, axis=1))
 
     training_feature_array, training_label_array, testing_feature_array, testing_label_array = \
-        combined_feature_engineering.get_training_and_testing_feature_array(stat_same_length_attack_list,
-                                                                            time_diff_same_length_attack_list,
-                                                                            stat_same_length_normal_list,
-                                                                            time_diff_same_length_normal_list)
+        combined_feature_engineering.get_training_and_testing_feature_array(top_stat_attack_list,
+                                                                            time_diff_attack_list,
+                                                                            top_stat_normal_list,
+                                                                            time_diff_normal_list)
 
+    # --------------------------------- ML ---------------------------------
     Consensus.knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
     Consensus.k_means(testing_feature_array, testing_label_array)
     Consensus.dnn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)

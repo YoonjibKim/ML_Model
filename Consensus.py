@@ -98,9 +98,43 @@ class Consensus(KNN, K_Means, DNN):
         cls.__testing_label_array = np.asarray(testing_label_array, dtype=float)
 
     @classmethod
-    def get_ml_features(cls):
+    def get_ml_training_and_testing_features(cls):
         return cls.__training_data_array, cls.__testing_data_array, cls.__training_label_array, \
             cls.__testing_label_array
+
+    @classmethod
+    def __add_label_to_feature_list(cls, feature_list, label):
+        temp_feature_list = list(feature_list)
+        combined_feature_list = []
+        for record in temp_feature_list:
+            temp_record = []
+            temp_record.extend(record)
+            temp_record.append(label)
+            combined_feature_list.append(temp_record)
+
+        return combined_feature_list
+
+    @classmethod
+    def divide_attack_and_normal_features(cls):
+        training_normal_feature_list = \
+            cls.__add_label_to_feature_list(cls.__training_normal_data_array, str(Constant.NORMAL_LABEL))
+        training_attack_feature_list = \
+            cls.__add_label_to_feature_list(cls.__training_attack_data_array, str(Constant.ATTACK_LABEL))
+        testing_normal_feature_list = \
+            cls.__add_label_to_feature_list(cls.__testing_normal_data_array, str(Constant.NORMAL_LABEL))
+        testing_attack_feature_list = \
+            cls.__add_label_to_feature_list(cls.__testing_attack_data_array, str(Constant.ATTACK_LABEL))
+
+        attack_feature_list = []
+        attack_feature_list.extend(training_attack_feature_list)
+        attack_feature_list.extend(testing_attack_feature_list)
+
+        normal_feature_list = []
+        normal_feature_list.extend(training_normal_feature_list)
+        normal_feature_list.extend(testing_normal_feature_list)
+
+        return attack_feature_list, normal_feature_list
+
 
     @classmethod
     def knn(cls, training_data_array, training_label_array, testing_data_array, testing_label_array):

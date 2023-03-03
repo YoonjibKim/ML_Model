@@ -14,6 +14,8 @@ class Combined_Feature_Engineering:
         diff_size = None
         flag_1 = False
         flag_2 = False
+        first_list = None
+        second_list = None
 
         if first_list_size > second_list_size:
             diff_size = first_list_size - second_list_size
@@ -25,14 +27,16 @@ class Combined_Feature_Engineering:
             large_list = second_mixed_list
             small_list = first_mixed_list
             flag_2 = True
-
-        first_list = None
-        second_list = None
+        else:
+            first_list = first_mixed_list
+            second_list = second_mixed_list
 
         if flag_1 or flag_2:
             large_list_size = len(large_list)
             list_ratio = large_list_size / diff_size
             round_ratio = round(list_ratio)
+            if round_ratio == 1:
+                round_ratio = 2
             del large_list[::round_ratio]
 
             if flag_1:
