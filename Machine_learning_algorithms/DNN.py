@@ -7,10 +7,10 @@ from matplotlib import pyplot as plt
 
 class DNN:
     @classmethod
-    def dnn_run(cls, training_data_array, training_label_array, testing_data_array, testing_label_array):
-        X_tn = training_data_array
+    def dnn_run(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+        X_tn = training_feature_array
         y_tn = to_categorical(training_label_array)
-        X_te = testing_data_array
+        X_te = testing_feature_array
         y_te = to_categorical(testing_label_array)
 
         n_feat = X_tn.shape[1]

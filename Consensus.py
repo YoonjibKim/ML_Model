@@ -3,11 +3,14 @@ import os
 import numpy as np
 import Constant
 from Machine_learning_algorithms.DNN import DNN
+from Machine_learning_algorithms.Gaussian_NB import Gaussian_NB
 from Machine_learning_algorithms.K_Means import K_Means
 from Machine_learning_algorithms.K_Nearest_Neighbor import KNN
+from Machine_learning_algorithms.Linear_Regressions import Linear_Regressions
+from Machine_learning_algorithms.Logistic_Regression import Logistic_Regression
 
 
-class Consensus(KNN, K_Means, DNN):
+class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regressions):
     __training_normal_data_array = None
     __training_attack_data_array = None
     __testing_normal_data_array = None
@@ -135,15 +138,69 @@ class Consensus(KNN, K_Means, DNN):
 
         return attack_feature_list, normal_feature_list
 
+    @classmethod
+    def __convert_training_and_testing_features(cls, training_feature_array, training_label_array,
+                                                testing_feature_array, testing_label_array):
+        X_tn = training_feature_array
+        X_te = testing_feature_array
+        y_tn = training_label_array
+        y_te = testing_label_array
+
+        return X_tn, y_tn, X_te, y_te
 
     @classmethod
-    def knn(cls, training_data_array, training_label_array, testing_data_array, testing_label_array):
-        super().knn_run(training_data_array, training_label_array, testing_data_array, testing_label_array)
+    def __convert_testing_feature(cls, testing_feature_array, testing_label_array):
+        X_te = testing_feature_array
+        y_te = testing_label_array
+
+        return X_te, y_te
 
     @classmethod
-    def k_means(cls, testing_data_array, testing_label_array):
-        super().k_means_run(testing_data_array, testing_label_array)
+    def knn(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        super().knn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
 
     @classmethod
-    def dnn(cls, training_data_array, testing_data_array, training_label_array, testing_label_array):
-        super().dnn_run(training_data_array, training_label_array, testing_data_array, testing_label_array)
+    def k_means(cls, testing_feature_array, testing_label_array):
+        X_te, y_te = cls.__convert_testing_feature(testing_feature_array, testing_label_array)
+        super().k_means_run(testing_feature_array, testing_label_array)
+
+    @classmethod
+    def dnn(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        super().dnn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+
+    @classmethod
+    def logistic_regression(cls, training_feature_array, training_label_array, testing_feature_array,
+                            testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        super().logistic_regression_run(training_feature_array, training_label_array, testing_feature_array,
+                                        testing_label_array)
+
+    @classmethod
+    def gaussian_nb(cls, training_feature_array, training_label_array, testing_feature_array,
+                    testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        super().gaussian_nb_run(training_feature_array, training_label_array, testing_feature_array,
+                                testing_label_array)
+
+    @classmethod
+    def linear_regressions(cls, training_feature_array, training_label_array, testing_feature_array,
+                           testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        super().linear_regressions_run(X_tn, y_tn, X_te, y_te)

@@ -5,12 +5,12 @@ from sklearn.preprocessing import StandardScaler
 
 class KNN:
     @classmethod
-    def knn_run(cls, training_data_array, training_label_array, testing_data_array, testing_label_array):
+    def knn_run(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
         std_scale = StandardScaler()
-        std_scale.fit(training_data_array)
+        std_scale.fit(training_feature_array)
 
-        X_tn_std = std_scale.transform(training_data_array)
-        X_te_std = std_scale.transform(testing_data_array)
+        X_tn_std = std_scale.transform(training_feature_array)
+        X_te_std = std_scale.transform(testing_feature_array)
 
         clf_knn = KNeighborsClassifier(n_neighbors=5)
         clf_knn.fit(X_tn_std, training_label_array.ravel())

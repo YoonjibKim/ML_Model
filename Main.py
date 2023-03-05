@@ -221,14 +221,22 @@ if __name__ == '__main__':
     ret_normal_count, ret_attack_count = calculate_feature_size(training_label_array)
     print('training normal count: ', ret_normal_count)
     print('training attack count: ', ret_attack_count)
-    print('training total count: ', len(training_label_array))
+    print('training feature dimension: ', training_feature_array.shape[1])
+    print('training total count: ', training_feature_array.shape[0])
     ret_normal_count, ret_attack_count = calculate_feature_size(testing_label_array)
     print('testing normal count: ', ret_normal_count)
     print('testing attack count: ', ret_attack_count)
-    print('testing total count: ', len(testing_label_array))
+    print('testing feature dimension:', testing_feature_array.shape[1])
+    print('testing total count: ', testing_feature_array.shape[0])
 
-    # Consensus.knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-    # Consensus.k_means(testing_feature_array, testing_label_array)
-    # Consensus.dnn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+    Consensus.knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+    Consensus.k_means(testing_feature_array, testing_label_array)
+    Consensus.dnn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+    Consensus.logistic_regression(training_feature_array, training_label_array, testing_feature_array,
+                                  testing_label_array)
+    Consensus.gaussian_nb_run(training_feature_array, training_label_array, testing_feature_array,
+                              testing_label_array)
+    Consensus.linear_regressions_run(training_feature_array, training_label_array, testing_feature_array,
+                                     testing_label_array)
 
     print('Simulation End')
