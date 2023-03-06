@@ -2,15 +2,24 @@ import csv
 import os
 import numpy as np
 import Constant
+from Machine_learning_algorithms.Ada_Boost import Ada_Boost
+from Machine_learning_algorithms.Agglomerative_Clustering import Agglomerative_Clustering
+from Machine_learning_algorithms.DB_Scan import DB_Scan
 from Machine_learning_algorithms.DNN import DNN
+from Machine_learning_algorithms.Decision_Tree import Decision_Tree
+from Machine_learning_algorithms.Gaussian_Mixture import Gaussian_Mixture
 from Machine_learning_algorithms.Gaussian_NB import Gaussian_NB
+from Machine_learning_algorithms.Gradient_Boost import Gradient_Boost
 from Machine_learning_algorithms.K_Means import K_Means
-from Machine_learning_algorithms.K_Nearest_Neighbor import KNN
+from Machine_learning_algorithms.KNN import KNN
 from Machine_learning_algorithms.Linear_Regressions import Linear_Regressions
 from Machine_learning_algorithms.Logistic_Regression import Logistic_Regression
+from Machine_learning_algorithms.Random_Forest import Random_Forest
+from Machine_learning_algorithms.SVM import SVM
 
 
-class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regressions):
+class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regressions, Decision_Tree, SVM,
+                Random_Forest, Ada_Boost, Gradient_Boost, DB_Scan, Gaussian_Mixture, Agglomerative_Clustering):
     __training_normal_data_array = None
     __training_attack_data_array = None
     __testing_normal_data_array = None
@@ -150,57 +159,153 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
 
     @classmethod
     def __convert_testing_feature(cls, testing_feature_array, testing_label_array):
-        X_te = testing_feature_array
-        y_te = testing_label_array
+        X = testing_feature_array
+        y = testing_label_array
 
-        return X_te, y_te
+        return X, y
 
     @classmethod
-    def knn(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+    def __knn(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
         X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
                                                                              training_label_array,
                                                                              testing_feature_array,
                                                                              testing_label_array)
-        super().knn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        return super().knn_run(X_tn, y_tn, X_te, y_te)
 
     @classmethod
-    def k_means(cls, testing_feature_array, testing_label_array):
-        X_te, y_te = cls.__convert_testing_feature(testing_feature_array, testing_label_array)
-        super().k_means_run(testing_feature_array, testing_label_array)
+    def __k_means(cls, testing_feature_array, testing_label_array):
+        X, y = cls.__convert_testing_feature(testing_feature_array, testing_label_array)
+        return super().k_means_run(X, y)
 
     @classmethod
-    def dnn(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+    def __dnn(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
         X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
                                                                              training_label_array,
                                                                              testing_feature_array,
                                                                              testing_label_array)
-        super().dnn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        return super().dnn_run(X_tn, y_tn, X_te, y_te)
 
     @classmethod
-    def logistic_regression(cls, training_feature_array, training_label_array, testing_feature_array,
-                            testing_label_array):
+    def __logistic_regression(cls, training_feature_array, training_label_array, testing_feature_array,
+                              testing_label_array):
         X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
                                                                              training_label_array,
                                                                              testing_feature_array,
                                                                              testing_label_array)
-        super().logistic_regression_run(training_feature_array, training_label_array, testing_feature_array,
-                                        testing_label_array)
+        return super().logistic_regression_run(X_tn, y_tn, X_te, y_te)
 
     @classmethod
-    def gaussian_nb(cls, training_feature_array, training_label_array, testing_feature_array,
-                    testing_label_array):
+    def __gaussian_nb(cls, training_feature_array, training_label_array, testing_feature_array,
+                      testing_label_array):
         X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
                                                                              training_label_array,
                                                                              testing_feature_array,
                                                                              testing_label_array)
-        super().gaussian_nb_run(training_feature_array, training_label_array, testing_feature_array,
+        return super().gaussian_nb_run(X_tn, y_tn, X_te, y_te)
+
+    @classmethod
+    def __linear_regressions(cls, training_feature_array, training_label_array, testing_feature_array,
+                             testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        return super().linear_regressions_run(X_tn, y_tn, X_te, y_te)
+
+    @classmethod
+    def __decision_tree(cls, training_feature_array, training_label_array, testing_feature_array,
+                        testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        return super().decision_tree_run(X_tn, y_tn, X_te, y_te)
+
+    @classmethod
+    def __svm(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        return super().svm_run(X_tn, y_tn, X_te, y_te)
+
+    @classmethod
+    def __random_forest(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        return super().random_forest_run(X_tn, y_tn, X_te, y_te)
+
+    @classmethod
+    def __ada_boost(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        return super().ada_boost_run(X_tn, y_tn, X_te, y_te)
+
+    @classmethod
+    def __gradient_boost(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
+                                                                             training_label_array,
+                                                                             testing_feature_array,
+                                                                             testing_label_array)
+        return super().gradient_boost_run(X_tn, y_tn, X_te, y_te)
+
+    @classmethod
+    def __db_scan(cls, testing_feature_array, testing_label_array):
+        X, y = cls.__convert_testing_feature(testing_feature_array, testing_label_array)
+        return super().db_scan_run(X, y)
+
+    @classmethod
+    def __gaussian_mixture(cls, testing_feature_array, testing_label_array):
+        X, y = cls.__convert_testing_feature(testing_feature_array, testing_label_array)
+        return super().gaussian_mixture_run(X, y)
+
+    @classmethod
+    def __agglomerative_clustering(cls, testing_feature_array, testing_label_array):
+        X, y = cls.__convert_testing_feature(testing_feature_array, testing_label_array)
+        return super().agglomerative_clustering_run(X, y)
+
+    @classmethod
+    def __get_f1_score(cls, class_report):
+
+
+    @classmethod
+    def get_best_ml(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+        class_report = \
+            cls.__knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        print(class_report)
+        class_report = \
+            cls.__k_means(testing_feature_array, testing_label_array)
+        class_report = \
+            cls.__dnn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report = \
+            cls.__logistic_regression(training_feature_array, training_label_array, testing_feature_array,
+                                      testing_label_array)
+        class_report = \
+            cls.__gaussian_nb(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report_lr, class_report_ridge, class_report_lasso, class_report_elastic = \
+            cls.__linear_regressions(training_feature_array, training_label_array, testing_feature_array,
+                                     testing_label_array)
+        class_report = \
+            cls.__decision_tree(training_feature_array, training_label_array, testing_feature_array,
                                 testing_label_array)
+        class_report = \
+            cls.__svm(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report = \
+            cls.__random_forest(training_feature_array, training_label_array, testing_feature_array,
+                                testing_label_array)
+        class_report = \
+            cls.__ada_boost(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report = \
+            cls.__gradient_boost(training_feature_array, training_label_array, testing_feature_array,
+                                 testing_label_array)
+        class_report = \
+            cls.__db_scan(testing_feature_array, testing_label_array)
+        class_report = \
+            cls.__gaussian_mixture(testing_feature_array, testing_label_array)
+        class_report = \
+            cls.__agglomerative_clustering(testing_feature_array, testing_label_array)
 
-    @classmethod
-    def linear_regressions(cls, training_feature_array, training_label_array, testing_feature_array,
-                           testing_label_array):
-        X_tn, y_tn, X_te, y_te = cls.__convert_training_and_testing_features(training_feature_array,
-                                                                             training_label_array,
-                                                                             testing_feature_array,
-                                                                             testing_label_array)
-        super().linear_regressions_run(X_tn, y_tn, X_te, y_te)

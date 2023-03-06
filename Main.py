@@ -229,14 +229,6 @@ if __name__ == '__main__':
     print('testing feature dimension:', testing_feature_array.shape[1])
     print('testing total count: ', testing_feature_array.shape[0])
 
-    Consensus.knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-    Consensus.k_means(testing_feature_array, testing_label_array)
-    Consensus.dnn_run(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-    Consensus.logistic_regression(training_feature_array, training_label_array, testing_feature_array,
-                                  testing_label_array)
-    Consensus.gaussian_nb_run(training_feature_array, training_label_array, testing_feature_array,
-                              testing_label_array)
-    Consensus.linear_regressions_run(training_feature_array, training_label_array, testing_feature_array,
-                                     testing_label_array)
+    Consensus.get_best_ml(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
 
     print('Simulation End')

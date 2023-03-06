@@ -16,5 +16,6 @@ class KNN:
         clf_knn.fit(X_tn_std, training_label_array.ravel())
         knn_pred = clf_knn.predict(X_te_std)
 
-        class_report = classification_report(testing_label_array, knn_pred, zero_division=0)
-        print(class_report)
+        class_report = classification_report(testing_label_array, knn_pred, zero_division=0, output_dict=True)
+
+        return class_report
