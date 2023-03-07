@@ -49,3 +49,29 @@ NORMAL_TIME_DIFF_FILE_NAME = 'normal_time_diff.txt'
 
 TRAINING_FEATURE_RATIO = 0.75
 TESTING_FEATURE_RATIO = 0.25
+
+OUTPUT_DIR = 'Output_results'
+
+ADA_BOOST = 'ada_boost'
+AGGLOMERATIVE_CLUSTERING = 'agglomerative_clustering'
+DB_SCAN = 'db_scan'
+DECISION_TREE = 'decision_tree'
+DNN = 'dnn'
+GAUSSIAN_MIXTURE = 'gaussian_mixture'
+GAUSSIAN_NB = 'gaussian_nb'
+GRADIENT_BOOST = 'gradient_boost'
+K_MEANS = 'k_means'
+KNN = 'knn'
+LINEAR_REGRESSION = 'linear_regression'
+LINEAR_REGRESSION_RIDGE = 'linear_regression_ridge'
+LINEAR_REGRESSION_LASSO = 'linear_regression_lasso'
+LINEAR_REGRESSION_ELASTIC = 'linear_regression_elastic'
+LOGISTIC_REGRESSION = 'logistic_regression'
+RANDOM_FOREST = 'random_forest'
+SVM = 'svm'
+
+WEIGHTED_AVG = 'weighted avg'
+PRECISION = 'precision'
+RECALL = 'recall'
+F1_SCORE = 'f1-score'
+SUPPORT = 'support'

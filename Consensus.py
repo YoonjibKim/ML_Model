@@ -2,6 +2,7 @@ import csv
 import os
 import numpy as np
 import Constant
+from APRF import APRF
 from Machine_learning_algorithms.Ada_Boost import Ada_Boost
 from Machine_learning_algorithms.Agglomerative_Clustering import Agglomerative_Clustering
 from Machine_learning_algorithms.DB_Scan import DB_Scan
@@ -19,7 +20,7 @@ from Machine_learning_algorithms.SVM import SVM
 
 
 class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regressions, Decision_Tree, SVM,
-                Random_Forest, Ada_Boost, Gradient_Boost, DB_Scan, Gaussian_Mixture, Agglomerative_Clustering):
+                Random_Forest, Ada_Boost, Gradient_Boost, DB_Scan, Gaussian_Mixture, Agglomerative_Clustering, APRF):
     __training_normal_data_array = None
     __training_attack_data_array = None
     __testing_normal_data_array = None
@@ -32,6 +33,41 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
     __training_label_array = None
     __testing_data_array = None
     __testing_label_array = None
+
+    __knn_score_list = []
+    __knn_candidate_score_list = []
+    __k_means_score_list = []
+    __k_means_candidate_score_list = []
+    __dnn_score_list = []
+    __dnn_candidate_score_list = []
+    __logistic_regression_score_list = []
+    __logistic_regression_candidate_score_list = []
+    __gaussian_nb_score_list = []
+    __gaussian_nb_candidate_score_list = []
+    __linear_regression_score_list = []
+    __linear_regression_candidate_score_list = []
+    __decision_tree_score_list = []
+    __decision_tree_candidate_score_list = []
+    __svm_score_list = []
+    __svm_score_candidate_score_list = []
+    __random_forest_score_list = []
+    __random_forest_candidate_score_list = []
+    __ada_boost_score_list = []
+    __ada_boost_candidate_score_list = []
+    __gradient_boost_score_list = []
+    __gradient_boost_candidate_score_list = []
+    __db_scan_score_list = []
+    __db_scan_candidate_score_list = []
+    __gaussian_mixture_score_list = []
+    __gaussian_mixture_candidate_score_list = []
+    __agglomerative_clustering_score_list = []
+    __agglomerative_clustering_candidate_score_list = []
+    __linear_regression_elastic_list = []
+    __linear_regression_elastic_candidate_score_list = []
+    __linear_regression_lasso_list = []
+    __linear_regression_lasso_candidate_score_list = []
+    __linear_regression_ridge_list = []
+    __linear_regression_ridge_candidate_score_list = []
 
     def __init__(self, data_path):
         self.__load_data(data_path)
@@ -269,43 +305,188 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
         return super().agglomerative_clustering_run(X, y)
 
     @classmethod
-    def __get_f1_score(cls, class_report):
-
+    def __calculate_scores(cls, class_report_list):
+        for index, outer_list in enumerate(class_report_list):
+            for class_report in outer_list:
+                if Constant.ADA_BOOST in class_report.keys():
+                    print('ada boost')
+                    cls.__ada_boost_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__ada_boost_candidate_score_list.append(candidate_score)
+                elif Constant.AGGLOMERATIVE_CLUSTERING in class_report.keys():
+                    print('agglomerative clustering')
+                    cls.__agglomerative_clustering_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__agglomerative_clustering_candidate_score_list.append(candidate_score)
+                elif Constant.DB_SCAN in class_report.keys():
+                    print('db scan')
+                    cls.__db_scan_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__db_scan_candidate_score_list.append(candidate_score)
+                elif Constant.DECISION_TREE in class_report.keys():
+                    print('decision tree')
+                    cls.__decision_tree_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__decision_tree_candidate_score_list.append(candidate_score)
+                elif Constant.DNN in class_report.keys():
+                    print('dnn')
+                    cls.__dnn_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__dnn_candidate_score_list.append(candidate_score)
+                elif Constant.GAUSSIAN_MIXTURE in class_report.keys():
+                    print('gaussian mixture')
+                    cls.__gaussian_mixture_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__gaussian_mixture_candidate_score_list.append(candidate_score)
+                elif Constant.GAUSSIAN_NB in class_report.keys():
+                    print('gaussian nb')
+                    cls.__gaussian_nb_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__gaussian_nb_candidate_score_list.append(candidate_score)
+                elif Constant.GRADIENT_BOOST in class_report.keys():
+                    print('gradient boost')
+                    cls.__gradient_boost_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__gradient_boost_candidate_score_list.append(candidate_score)
+                elif Constant.K_MEANS in class_report.keys():
+                    print('k means')
+                    cls.__k_means_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__k_means_candidate_score_list.append(candidate_score)
+                elif Constant.KNN in class_report.keys():
+                    print('knn')
+                    cls.__knn_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__knn_candidate_score_list.append(candidate_score)
+                elif Constant.LOGISTIC_REGRESSION in class_report.keys():
+                    print('logistic regression')
+                    cls.__logistic_regression_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__logistic_regression_candidate_score_list.append(candidate_score)
+                elif Constant.RANDOM_FOREST in class_report.keys():
+                    print('random forest')
+                    cls.__random_forest_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__random_forest_candidate_score_list.append(candidate_score)
+                elif Constant.SVM in class_report.keys():
+                    print('svm')
+                    cls.__svm_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__svm_score_candidate_score_list.append(candidate_score)
+                elif Constant.LINEAR_REGRESSION in class_report.keys():
+                    print('linear regression')
+                    cls.__linear_regression_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__linear_regression_candidate_score_list.append(candidate_score)
+                elif Constant.LINEAR_REGRESSION_ELASTIC in class_report.keys():
+                    print('linear regression elastic')
+                    cls.__linear_regression_ridge_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__linear_regression_ridge_candidate_score_list.append(candidate_score)
+                elif Constant.LINEAR_REGRESSION_LASSO in class_report.keys():
+                    print('linear regressio lasso')
+                    cls.__linear_regression_lasso_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__linear_regression_lasso_candidate_score_list.append(candidate_score)
+                elif Constant.LINEAR_REGRESSION_RIDGE in class_report.keys():
+                    print('linear regressio ridge')
+                    cls.__linear_regression_ridge_list.append(class_report[Constant.WEIGHTED_AVG])
+                    candidate_score = super().aprf_run(class_report[Constant.WEIGHTED_AVG])
+                    cls.__linear_regression_ridge_candidate_score_list.append(candidate_score)
+                else:
+                    print('wrong ML')
 
     @classmethod
-    def get_best_ml(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+    def __get_best_ml(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+        class_report_list = []
+
         class_report = \
             cls.__knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-        print(class_report)
+        class_report[Constant.KNN] = Constant.KNN
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__k_means(testing_feature_array, testing_label_array)
+        class_report[Constant.K_MEANS] = Constant.K_MEANS
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__dnn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report[Constant.DNN] = Constant.DNN
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__logistic_regression(training_feature_array, training_label_array, testing_feature_array,
                                       testing_label_array)
+        class_report[Constant.LOGISTIC_REGRESSION] = Constant.LOGISTIC_REGRESSION
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__gaussian_nb(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report[Constant.GAUSSIAN_NB] = Constant.GAUSSIAN_NB
+        class_report_list.append([class_report])
+
         class_report_lr, class_report_ridge, class_report_lasso, class_report_elastic = \
             cls.__linear_regressions(training_feature_array, training_label_array, testing_feature_array,
                                      testing_label_array)
+        class_report_lr[Constant.LINEAR_REGRESSION] = Constant.LINEAR_REGRESSION
+        class_report_ridge[Constant.LINEAR_REGRESSION_RIDGE] = Constant.LINEAR_REGRESSION_RIDGE
+        class_report_lasso[Constant.LINEAR_REGRESSION_LASSO] = Constant.LINEAR_REGRESSION_LASSO
+        class_report_elastic[Constant.LINEAR_REGRESSION_ELASTIC] = Constant.LINEAR_REGRESSION_ELASTIC
+        class_report_list.append([class_report_lr, class_report_ridge, class_report_lasso, class_report_elastic])
+
         class_report = \
             cls.__decision_tree(training_feature_array, training_label_array, testing_feature_array,
                                 testing_label_array)
+        class_report[Constant.DECISION_TREE] = Constant.DECISION_TREE
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__svm(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report[Constant.SVM] = Constant.SVM
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__random_forest(training_feature_array, training_label_array, testing_feature_array,
                                 testing_label_array)
+        class_report[Constant.RANDOM_FOREST] = Constant.RANDOM_FOREST
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__ada_boost(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report[Constant.ADA_BOOST] = Constant.ADA_BOOST
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__gradient_boost(training_feature_array, training_label_array, testing_feature_array,
                                  testing_label_array)
+        class_report[Constant.GRADIENT_BOOST] = Constant.GRADIENT_BOOST
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__db_scan(testing_feature_array, testing_label_array)
+        class_report[Constant.DB_SCAN] = Constant.DB_SCAN
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__gaussian_mixture(testing_feature_array, testing_label_array)
+        class_report[Constant.GAUSSIAN_MIXTURE] = Constant.GAUSSIAN_MIXTURE
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__agglomerative_clustering(testing_feature_array, testing_label_array)
+        class_report[Constant.AGGLOMERATIVE_CLUSTERING] = Constant.AGGLOMERATIVE_CLUSTERING
+        class_report_list.append([class_report])
 
+        cls.__calculate_scores(class_report_list)
+
+    @classmethod
+    def __calculate_total_candidate_score(cls):
+        print('total candidate score')
+
+    @classmethod
+    def ensemble_run(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+        for i in range(0, 2):
+            cls.__get_best_ml(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+
+        cls.__calculate_total_candidate_score()
