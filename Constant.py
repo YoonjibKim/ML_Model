@@ -71,7 +71,5 @@ RANDOM_FOREST = 'random_forest'
 SVM = 'svm'
 
 WEIGHTED_AVG = 'weighted avg'
-PRECISION = 'precision'
-RECALL = 'recall'
 F1_SCORE = 'f1-score'
 SUPPORT = 'support'
