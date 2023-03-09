@@ -305,13 +305,13 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
         return super().agglomerative_clustering_run(X, y)
 
     @classmethod
-    def __calculate_scores(cls, class_report_list):
+    def __calculate_scores(cls, count, class_report_list):
         for index, outer_list in enumerate(class_report_list):
             for class_report in outer_list:
                 normal_count = class_report[str(Constant.NORMAL_LABEL)][Constant.SUPPORT]
                 attack_count = class_report[str(Constant.ATTACK_LABEL)][Constant.SUPPORT]
                 f1_score = class_report[str(Constant.WEIGHTED_AVG)][Constant.F1_SCORE]
-                candidate_score = super().aprf_run(normal_count, attack_count, f1_score)
+                candidate_score = super().aprf_run(count, normal_count, attack_count, f1_score)
 
                 if Constant.ADA_BOOST in class_report.keys():
                     print('ada boost')
@@ -385,7 +385,8 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
                     print('wrong ML')
 
     @classmethod
-    def __get_best_ml(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
+    def __get_best_ml(cls, count, training_feature_array, training_label_array, testing_feature_array,
+                      testing_label_array):
         class_report_list = []
 
         # class_report = \
@@ -466,21 +467,89 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
         # class_report[Constant.AGGLOMERATIVE_CLUSTERING] = Constant.AGGLOMERATIVE_CLUSTERING
         # class_report_list.append([class_report])
 
-        cls.__calculate_scores(class_report_list)
+        cls.__calculate_scores(count, class_report_list)
 
     @classmethod
     def __calculate_total_candidate_score(cls):
-        print('total candidate score')
+        total_score_list = []
+
+        ada_boost_score = sum(cls.__ada_boost_candidate_score_list)
+        score_list = [ada_boost_score, Constant.ADA_BOOST]
+        total_score_list.append(score_list)
+
+        agglomerative_clustering_score = sum(cls.__agglomerative_clustering_candidate_score_list)
+        score_list = [agglomerative_clustering_score, Constant.AGGLOMERATIVE_CLUSTERING]
+        total_score_list.append(score_list)
+
+        db_scan_score = sum(cls.__db_scan_candidate_score_list)
+        score_list = [db_scan_score, Constant.DB_SCAN]
+        total_score_list.append(score_list)
+
+        decision_tree_score = sum(cls.__decision_tree_candidate_score_list)
+        score_list = [decision_tree_score, Constant.DECISION_TREE]
+        total_score_list.append(score_list)
+
+        dnn_score = sum(cls.__dnn_candidate_score_list)
+        score_list = [dnn_score, Constant.DNN]
+        total_score_list.append(score_list)
+
+        gaussian_mixture_score = sum(cls.__gaussian_mixture_candidate_score_list)
+        score_list = [gaussian_mixture_score, Constant.GAUSSIAN_MIXTURE]
+        total_score_list.append(score_list)
+
+        gaussian_nb_score = sum(cls.__gaussian_nb_candidate_score_list)
+        score_list = [gaussian_nb_score, Constant.GAUSSIAN_NB]
+        total_score_list.append(score_list)
+
+        gradient_boost_score = sum(cls.__gradient_boost_candidate_score_list)
+        score_list = [gradient_boost_score, Constant.GRADIENT_BOOST]
+        total_score_list.append(score_list)
+
+        k_means_score = sum(cls.__k_means_candidate_score_list)
+        score_list = [k_means_score, Constant.K_MEANS]
+        total_score_list.append(score_list)
+
+        knn_score = sum(cls.__knn_candidate_score_list)
+        score_list = [knn_score, Constant.KNN]
+        total_score_list.append(score_list)
+
+        linear_regression_score = sum(cls.__linear_regression_candidate_score_list)
+        score_list = [linear_regression_score, Constant.LINEAR_REGRESSION]
+        total_score_list.append(score_list)
+
+        linear_regression_lasso_score = sum(cls.__linear_regression_lasso_candidate_score_list)
+        score_list = [linear_regression_lasso_score, Constant.LINEAR_REGRESSION_LASSO]
+        total_score_list.append(score_list)
+
+        linear_regression_ridge_score = sum(cls.__linear_regression_ridge_candidate_score_list)
+        score_list = [linear_regression_ridge_score, Constant.LINEAR_REGRESSION_RIDGE]
+        total_score_list.append(score_list)
+
+        linear_regression_elastic_score = sum(cls.__linear_regression_elastic_candidate_score_list)
+        score_list = [linear_regression_elastic_score, Constant.LINEAR_REGRESSION_ELASTIC]
+        total_score_list.append(score_list)
+
+        total_score_list = sorted(total_score_list, key=lambda a: a[0], reverse=True)
+
+        return total_score_list[0][0], total_score_list[0][1]
 
     @classmethod
     def __save_scores(cls, score_list, save_path):
-        print(save_path)
+        if len(score_list) > 0:
+            with open(save_path, 'w') as f:
+                w = csv.writer(f)
+                w.writerow(score_list[0].keys())
+                for score in score_list:
+                    w.writerow(score.values())
 
     @classmethod
     def ensemble_run(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
         for i in range(0, 1):
-            cls.__get_best_ml(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-            cls.__calculate_total_candidate_score()
+            cls.__get_best_ml(i, training_feature_array, training_label_array, testing_feature_array,
+                              testing_label_array)
+            best_score, best_ml = cls.__calculate_total_candidate_score()
+            print('--------------------------')
+            print(best_score, best_ml)
 
         cls.__save_scores(cls.__ada_boost_score_list, Constant.OUTPUT_DIR + '/' + Constant.ADA_BOOST + '_score.csv')
         cls.__save_scores(cls.__agglomerative_clustering_score_list, Constant.OUTPUT_DIR + '/' +
