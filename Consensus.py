@@ -1,7 +1,5 @@
 import csv
 import os
-from time import sleep
-
 import numpy as np
 import Constant
 from APRF import APRF
