@@ -1,5 +1,7 @@
 import csv
 import os
+from time import sleep
+
 import numpy as np
 import Constant
 from APRF import APRF
@@ -68,6 +70,9 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
     __linear_regression_lasso_candidate_score_list = []
     __linear_regression_ridge_score_list = []
     __linear_regression_ridge_candidate_score_list = []
+
+    __positive_score = 0
+    __negative_score = 0
 
     def __init__(self, data_path):
         self.__load_data(data_path)
@@ -305,13 +310,23 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
         return super().agglomerative_clustering_run(X, y)
 
     @classmethod
-    def __calculate_scores(cls, count, class_report_list):
+    def __calculate_scores(cls, class_report_list):
         for index, outer_list in enumerate(class_report_list):
             for class_report in outer_list:
                 normal_count = class_report[str(Constant.NORMAL_LABEL)][Constant.SUPPORT]
                 attack_count = class_report[str(Constant.ATTACK_LABEL)][Constant.SUPPORT]
                 f1_score = class_report[str(Constant.WEIGHTED_AVG)][Constant.F1_SCORE]
-                candidate_score = super().aprf_run(count, normal_count, attack_count, f1_score)
+
+                total_count = normal_count + attack_count
+                positive_ratio = normal_count / total_count
+                negative_ratio = attack_count / total_count
+                positive_score = f1_score * positive_ratio
+                negative_score = (1.0 - f1_score) * negative_ratio
+
+                cls.__positive_score += positive_score
+                cls.__negative_score += negative_score
+
+                candidate_score = super().aprf_run(cls.__positive_score, cls.__negative_score)
 
                 if Constant.ADA_BOOST in class_report.keys():
                     print('ada boost')
@@ -385,89 +400,93 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
                     print('wrong ML')
 
     @classmethod
-    def __get_best_ml(cls, count, training_feature_array, training_label_array, testing_feature_array,
+    def __get_best_ml(cls, training_feature_array, training_label_array, testing_feature_array,
                       testing_label_array):
         class_report_list = []
 
-        # class_report = \
-        #     cls.__knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-        # class_report[Constant.KNN] = Constant.KNN
-        # class_report_list.append([class_report])
+        class_report = \
+            cls.__knn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report[Constant.KNN] = Constant.KNN
+        class_report_list.append([class_report])
 
-        # class_report = \
-        #     cls.__k_means(testing_feature_array, testing_label_array)
-        # class_report[Constant.K_MEANS] = Constant.K_MEANS
-        # class_report_list.append([class_report])
-        #
+        class_report = \
+            cls.__k_means(testing_feature_array, testing_label_array)
+        class_report[Constant.K_MEANS] = Constant.K_MEANS
+        class_report_list.append([class_report])
+
         # class_report = \
         #     cls.__dnn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
         # class_report[Constant.DNN] = Constant.DNN
         # class_report_list.append([class_report])
-        #
-        # class_report = \
-        #     cls.__logistic_regression(training_feature_array, training_label_array, testing_feature_array,
-        #                               testing_label_array)
-        # class_report[Constant.LOGISTIC_REGRESSION] = Constant.LOGISTIC_REGRESSION
-        # class_report_list.append([class_report])
-        #
-        # class_report = \
-        #     cls.__gaussian_nb(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-        # class_report[Constant.GAUSSIAN_NB] = Constant.GAUSSIAN_NB
-        # class_report_list.append([class_report])
-        #
-        # class_report_lr, class_report_ridge, class_report_lasso, class_report_elastic = \
-        #     cls.__linear_regressions(training_feature_array, training_label_array, testing_feature_array,
-        #                              testing_label_array)
-        # class_report_lr[Constant.LINEAR_REGRESSION] = Constant.LINEAR_REGRESSION
-        # class_report_ridge[Constant.LINEAR_REGRESSION_RIDGE] = Constant.LINEAR_REGRESSION_RIDGE
-        # class_report_lasso[Constant.LINEAR_REGRESSION_LASSO] = Constant.LINEAR_REGRESSION_LASSO
-        # class_report_elastic[Constant.LINEAR_REGRESSION_ELASTIC] = Constant.LINEAR_REGRESSION_ELASTIC
-        # class_report_list.append([class_report_lr, class_report_ridge, class_report_lasso, class_report_elastic])
-        #
-        # class_report = \
-        #     cls.__decision_tree(training_feature_array, training_label_array, testing_feature_array,
-        #                         testing_label_array)
-        # class_report[Constant.DECISION_TREE] = Constant.DECISION_TREE
-        # class_report_list.append([class_report])
-        #
-        # class_report = \
-        #     cls.__svm(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-        # class_report[Constant.SVM] = Constant.SVM
-        # class_report_list.append([class_report])
-        #
-        # class_report = \
-        #     cls.__random_forest(training_feature_array, training_label_array, testing_feature_array,
-        #                         testing_label_array)
-        # class_report[Constant.RANDOM_FOREST] = Constant.RANDOM_FOREST
-        # class_report_list.append([class_report])
-        #
+
+        class_report = \
+            cls.__logistic_regression(training_feature_array, training_label_array, testing_feature_array,
+                                      testing_label_array)
+        class_report[Constant.LOGISTIC_REGRESSION] = Constant.LOGISTIC_REGRESSION
+        class_report_list.append([class_report])
+
+        class_report = \
+            cls.__gaussian_nb(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report[Constant.GAUSSIAN_NB] = Constant.GAUSSIAN_NB
+        class_report_list.append([class_report])
+
+        class_report_lr, class_report_ridge, class_report_lasso, class_report_elastic = \
+            cls.__linear_regressions(training_feature_array, training_label_array, testing_feature_array,
+                                     testing_label_array)
+        class_report_lr[Constant.LINEAR_REGRESSION] = Constant.LINEAR_REGRESSION
+        class_report_ridge[Constant.LINEAR_REGRESSION_RIDGE] = Constant.LINEAR_REGRESSION_RIDGE
+        class_report_lasso[Constant.LINEAR_REGRESSION_LASSO] = Constant.LINEAR_REGRESSION_LASSO
+        class_report_elastic[Constant.LINEAR_REGRESSION_ELASTIC] = Constant.LINEAR_REGRESSION_ELASTIC
+        class_report_list.append([class_report_lr, class_report_ridge, class_report_lasso, class_report_elastic])
+
+        class_report = \
+            cls.__decision_tree(training_feature_array, training_label_array, testing_feature_array,
+                                testing_label_array)
+        class_report[Constant.DECISION_TREE] = Constant.DECISION_TREE
+        class_report_list.append([class_report])
+
+        class_report = \
+            cls.__svm(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report[Constant.SVM] = Constant.SVM
+        class_report_list.append([class_report])
+
+        class_report = \
+            cls.__random_forest(training_feature_array, training_label_array, testing_feature_array,
+                                testing_label_array)
+        class_report[Constant.RANDOM_FOREST] = Constant.RANDOM_FOREST
+        class_report_list.append([class_report])
+
         class_report = \
             cls.__ada_boost(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
         class_report[Constant.ADA_BOOST] = Constant.ADA_BOOST
         class_report_list.append([class_report])
-        #
-        # class_report = \
-        #     cls.__gradient_boost(training_feature_array, training_label_array, testing_feature_array,
-        #                          testing_label_array)
-        # class_report[Constant.GRADIENT_BOOST] = Constant.GRADIENT_BOOST
-        # class_report_list.append([class_report])
-        #
-        # class_report = \
-        #     cls.__db_scan(testing_feature_array, testing_label_array)
-        # class_report[Constant.DB_SCAN] = Constant.DB_SCAN
-        # class_report_list.append([class_report])
-        #
-        # class_report = \
-        #     cls.__gaussian_mixture(testing_feature_array, testing_label_array)
-        # class_report[Constant.GAUSSIAN_MIXTURE] = Constant.GAUSSIAN_MIXTURE
-        # class_report_list.append([class_report])
-        #
-        # class_report = \
-        #     cls.__agglomerative_clustering(testing_feature_array, testing_label_array)
-        # class_report[Constant.AGGLOMERATIVE_CLUSTERING] = Constant.AGGLOMERATIVE_CLUSTERING
-        # class_report_list.append([class_report])
 
-        cls.__calculate_scores(count, class_report_list)
+        class_report = \
+            cls.__gradient_boost(training_feature_array, training_label_array, testing_feature_array,
+                                 testing_label_array)
+        class_report[Constant.GRADIENT_BOOST] = Constant.GRADIENT_BOOST
+        class_report_list.append([class_report])
+
+        class_report = \
+            cls.__db_scan(testing_feature_array, testing_label_array)
+        class_report[Constant.DB_SCAN] = Constant.DB_SCAN
+        class_report_list.append([class_report])
+
+        class_report = \
+            cls.__gaussian_mixture(testing_feature_array, testing_label_array)
+        class_report[Constant.GAUSSIAN_MIXTURE] = Constant.GAUSSIAN_MIXTURE
+        class_report_list.append([class_report])
+
+        class_report = \
+            cls.__agglomerative_clustering(testing_feature_array, testing_label_array)
+        class_report[Constant.AGGLOMERATIVE_CLUSTERING] = Constant.AGGLOMERATIVE_CLUSTERING
+        class_report_list.append([class_report])
+
+        for i in class_report_list:
+            for j in i:
+                print(j)
+
+        # cls.__calculate_scores(class_report_list)
 
     @classmethod
     def __calculate_total_candidate_score(cls):
@@ -545,11 +564,14 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
     @classmethod
     def ensemble_run(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
         for i in range(0, 1):
-            cls.__get_best_ml(i, training_feature_array, training_label_array, testing_feature_array,
+            cls.__get_best_ml(training_feature_array, training_label_array, testing_feature_array,
                               testing_label_array)
             best_score, best_ml = cls.__calculate_total_candidate_score()
             print('--------------------------')
             print(best_score, best_ml)
+
+        cls.__negative_score = 0
+        cls.__positive_score = 0
 
         cls.__save_scores(cls.__ada_boost_score_list, Constant.OUTPUT_DIR + '/' + Constant.ADA_BOOST + '_score.csv')
         cls.__save_scores(cls.__agglomerative_clustering_score_list, Constant.OUTPUT_DIR + '/' +

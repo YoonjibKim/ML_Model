@@ -109,13 +109,13 @@ class Combined_Feature_Engineering:
         training_feature_array = \
             np.array(list(list(map(float, features[:-1])) for features in training_feature_and_label_array))
         training_label_array = \
-            np.array(list([int(features[last_index])] for features in training_feature_and_label_array))
+            np.array(list(int(features[last_index]) for features in training_feature_and_label_array))
 
         testing_feature_array = \
             np.array(list(list(map(float, features[:-1])) for features in testing_feature_and_label_array))
 
         testing_label_array = \
-            np.array(list([int(features[last_index])] for features in testing_feature_and_label_array))
+            np.array(list(int(features[last_index]) for features in testing_feature_and_label_array))
 
         return training_feature_array, training_label_array, testing_feature_array, testing_label_array
 

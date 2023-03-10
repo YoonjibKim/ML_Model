@@ -5,7 +5,7 @@ from sklearn.mixture import GaussianMixture
 class Gaussian_Mixture:
     @classmethod
     def gaussian_mixture_run(cls, X, y):
-        gmm = GaussianMixture(n_components=2, random_state=0, reg_covar=0.001)
+        gmm = GaussianMixture(n_components=5, random_state=0, reg_covar=1)
         gmm.fit(X)
         label_gmm = gmm.predict(X)
 
