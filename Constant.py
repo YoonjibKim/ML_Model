@@ -24,6 +24,8 @@ ATTACK = 'Attack'
 
 NORMAL_LABEL = 0
 ATTACK_LABEL = 1
+NORMAL_LABEL_FLOAT = 0.0
+ATTACK_LABEL_FLOAT = 1.0
 
 LIST_SEQUENCE = ['cycles', 'instructions', 'branch']
 

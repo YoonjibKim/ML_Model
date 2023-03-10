@@ -71,11 +71,115 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
     __linear_regression_ridge_score_list = []
     __linear_regression_ridge_candidate_score_list = []
 
-    __positive_score = 0
-    __negative_score = 0
+    __ada_boost_negative_score = 0
+    __ada_boost_positive_score = 0
+    __agglomerative_clustering_negative_score = 0
+    __agglomerative_clustering_positive_score = 0
+    __db_scan_negative_score = 0
+    __db_scan_positive_score = 0
+    __decision_tree_negative_score = 0
+    __decision_tree_positive_score = 0
+    __dnn_negative_score = 0
+    __dnn_positive_score = 0
+    __gaussian_mixture_negative_score = 0
+    __gaussian_mixture_positive_score = 0
+    __gaussian_nb_negative_score = 0
+    __gaussian_nb_positive_score = 0
+    __gradient_boost_negative_score = 0
+    __gradient_boost_positive_score = 0
+    __k_means_negative_score = 0
+    __k_means_positive_score = 0
+    __knn_negative_score = 0
+    __knn_positive_score = 0
+    __linear_regression_negative_score = 0
+    __linear_regression_positive_score = 0
+    __linear_regression_ridge_negative_score = 0
+    __linear_regression_ridge_positive_score = 0
+    __linear_regression_lasso_negative_score = 0
+    __linear_regression_lasso_positive_score = 0
+    __linear_regression_elastic_negative_score = 0
+    __linear_regression_elastic_positive_score = 0
+    __logistic_regression_negative_score = 0
+    __logistic_regression_positive_score = 0
+    __random_forest_negative_score = 0
+    __random_forest_positive_score = 0
+    __svm_negative_score = 0
+    __svm_positive_score = 0
 
     def __init__(self, data_path):
         self.__load_data(data_path)
+
+    @classmethod
+    def __init_all_variables(cls):
+        cls.__knn_score_list.clear()
+        cls.__knn_candidate_score_list.clear()
+        cls.__k_means_score_list.clear()
+        cls.__k_means_candidate_score_list.clear()
+        cls.__dnn_score_list.clear()
+        cls.__dnn_candidate_score_list.clear()
+        cls.__logistic_regression_score_list.clear()
+        cls.__logistic_regression_candidate_score_list.clear()
+        cls.__gaussian_nb_score_list.clear()
+        cls.__gaussian_nb_candidate_score_list.clear()
+        cls.__linear_regression_score_list.clear()
+        cls.__linear_regression_candidate_score_list.clear()
+        cls.__decision_tree_score_list.clear()
+        cls.__decision_tree_candidate_score_list.clear()
+        cls.__svm_score_list.clear()
+        cls.__svm_score_candidate_score_list.clear()
+        cls.__random_forest_score_list.clear()
+        cls.__random_forest_candidate_score_list.clear()
+        cls.__ada_boost_score_list.clear()
+        cls.__ada_boost_candidate_score_list.clear()
+        cls.__gradient_boost_score_list.clear()
+        cls.__gradient_boost_candidate_score_list.clear()
+        cls.__db_scan_score_list.clear()
+        cls.__db_scan_candidate_score_list.clear()
+        cls.__gaussian_mixture_score_list.clear()
+        cls.__gaussian_mixture_candidate_score_list.clear()
+        cls.__agglomerative_clustering_score_list.clear()
+        cls.__agglomerative_clustering_candidate_score_list.clear()
+        cls.__linear_regression_elastic_score_list.clear()
+        cls.__linear_regression_elastic_candidate_score_list.clear()
+        cls.__linear_regression_lasso_score_list.clear()
+        cls.__linear_regression_lasso_candidate_score_list.clear()
+        cls.__linear_regression_ridge_score_list.clear()
+        cls.__linear_regression_ridge_candidate_score_list.clear()
+
+        cls.__ada_boost_negative_score = 0
+        cls.__ada_boost_positive_score = 0
+        cls.__agglomerative_clustering_negative_score = 0
+        cls.__agglomerative_clustering_positive_score = 0
+        cls.__db_scan_negative_score = 0
+        cls.__db_scan_positive_score = 0
+        cls.__decision_tree_negative_score = 0
+        cls.__decision_tree_positive_score = 0
+        cls.__dnn_negative_score = 0
+        cls.__dnn_positive_score = 0
+        cls.__gaussian_mixture_negative_score = 0
+        cls.__gaussian_mixture_positive_score = 0
+        cls.__gaussian_nb_negative_score = 0
+        cls.__gaussian_nb_positive_score = 0
+        cls.__gradient_boost_negative_score = 0
+        cls.__gradient_boost_positive_score = 0
+        cls.__k_means_negative_score = 0
+        cls.__k_means_positive_score = 0
+        cls.__knn_negative_score = 0
+        cls.__knn_positive_score = 0
+        cls.__linear_regression_negative_score = 0
+        cls.__linear_regression_positive_score = 0
+        cls.__linear_regression_ridge_negative_score = 0
+        cls.__linear_regression_ridge_positive_score = 0
+        cls.__linear_regression_lasso_negative_score = 0
+        cls.__linear_regression_lasso_positive_score = 0
+        cls.__linear_regression_elastic_negative_score = 0
+        cls.__linear_regression_elastic_positive_score = 0
+        cls.__logistic_regression_negative_score = 0
+        cls.__logistic_regression_positive_score = 0
+        cls.__random_forest_negative_score = 0
+        cls.__random_forest_positive_score = 0
+        cls.__svm_negative_score = 0
+        cls.__svm_positive_score = 0
 
     @classmethod
     def __load_data(cls, root_path):
@@ -313,8 +417,15 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
     def __calculate_scores(cls, class_report_list):
         for index, outer_list in enumerate(class_report_list):
             for class_report in outer_list:
-                normal_count = class_report[str(Constant.NORMAL_LABEL)][Constant.SUPPORT]
-                attack_count = class_report[str(Constant.ATTACK_LABEL)][Constant.SUPPORT]
+                try:
+                    normal_count = class_report[str(Constant.NORMAL_LABEL)][Constant.SUPPORT]
+                except KeyError:
+                    normal_count = class_report[str(Constant.NORMAL_LABEL_FLOAT)][Constant.SUPPORT]
+                try:
+                    attack_count = class_report[str(Constant.ATTACK_LABEL)][Constant.SUPPORT]
+                except KeyError:
+                    attack_count = class_report[str(Constant.ATTACK_LABEL_FLOAT)][Constant.SUPPORT]
+
                 f1_score = class_report[str(Constant.WEIGHTED_AVG)][Constant.F1_SCORE]
 
                 total_count = normal_count + attack_count
@@ -323,78 +434,135 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
                 positive_score = f1_score * positive_ratio
                 negative_score = (1.0 - f1_score) * negative_ratio
 
-                cls.__positive_score += positive_score
-                cls.__negative_score += negative_score
-
-                candidate_score = super().aprf_run(cls.__positive_score, cls.__negative_score)
-
                 if Constant.ADA_BOOST in class_report.keys():
                     print('ada boost')
                     cls.__ada_boost_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__ada_boost_positive_score += positive_score
+                    cls.__ada_boost_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__ada_boost_positive_score, cls.__ada_boost_negative_score)
                     cls.__ada_boost_candidate_score_list.append(candidate_score)
                 elif Constant.AGGLOMERATIVE_CLUSTERING in class_report.keys():
                     print('agglomerative clustering')
                     cls.__agglomerative_clustering_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__agglomerative_clustering_positive_score += positive_score
+                    cls.__agglomerative_clustering_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__agglomerative_clustering_positive_score,
+                                                       cls.__agglomerative_clustering_negative_score)
                     cls.__agglomerative_clustering_candidate_score_list.append(candidate_score)
                 elif Constant.DB_SCAN in class_report.keys():
                     print('db scan')
                     cls.__db_scan_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__db_scan_positive_score += positive_score
+                    cls.__db_scan_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__db_scan_positive_score, cls.__db_scan_negative_score)
                     cls.__db_scan_candidate_score_list.append(candidate_score)
                 elif Constant.DECISION_TREE in class_report.keys():
                     print('decision tree')
                     cls.__decision_tree_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__decision_tree_positive_score += positive_score
+                    cls.__decision_tree_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__decision_tree_positive_score,
+                                                       cls.__decision_tree_negative_score)
                     cls.__decision_tree_candidate_score_list.append(candidate_score)
                 elif Constant.DNN in class_report.keys():
                     print('dnn')
                     cls.__dnn_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__dnn_positive_score += positive_score
+                    cls.__dnn_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__dnn_positive_score, cls.__dnn_negative_score)
                     cls.__dnn_candidate_score_list.append(candidate_score)
                 elif Constant.GAUSSIAN_MIXTURE in class_report.keys():
                     print('gaussian mixture')
                     cls.__gaussian_mixture_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__gaussian_mixture_positive_score += positive_score
+                    cls.__gaussian_mixture_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__gaussian_mixture_positive_score,
+                                                       cls.__gaussian_mixture_negative_score)
                     cls.__gaussian_mixture_candidate_score_list.append(candidate_score)
                 elif Constant.GAUSSIAN_NB in class_report.keys():
                     print('gaussian nb')
                     cls.__gaussian_nb_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__gaussian_nb_positive_score += positive_score
+                    cls.__gaussian_nb_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__gaussian_nb_positive_score,
+                                                       cls.__gaussian_nb_negative_score)
                     cls.__gaussian_nb_candidate_score_list.append(candidate_score)
                 elif Constant.GRADIENT_BOOST in class_report.keys():
                     print('gradient boost')
                     cls.__gradient_boost_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__gradient_boost_positive_score += positive_score
+                    cls.__gradient_boost_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__gradient_boost_positive_score,
+                                                       cls.__gradient_boost_negative_score)
                     cls.__gradient_boost_candidate_score_list.append(candidate_score)
                 elif Constant.K_MEANS in class_report.keys():
                     print('k means')
                     cls.__k_means_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__k_means_positive_score += positive_score
+                    cls.__k_means_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__k_means_positive_score, cls.__k_means_negative_score)
                     cls.__k_means_candidate_score_list.append(candidate_score)
                 elif Constant.KNN in class_report.keys():
                     print('knn')
                     cls.__knn_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__knn_positive_score += positive_score
+                    cls.__knn_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__knn_positive_score, cls.__knn_negative_score)
                     cls.__knn_candidate_score_list.append(candidate_score)
                 elif Constant.LOGISTIC_REGRESSION in class_report.keys():
                     print('logistic regression')
                     cls.__logistic_regression_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__logistic_regression_positive_score += positive_score
+                    cls.__logistic_regression_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__logistic_regression_positive_score,
+                                                       cls.__logistic_regression_negative_score)
                     cls.__logistic_regression_candidate_score_list.append(candidate_score)
                 elif Constant.RANDOM_FOREST in class_report.keys():
                     print('random forest')
                     cls.__random_forest_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__random_forest_positive_score += positive_score
+                    cls.__random_forest_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__random_forest_positive_score,
+                                                       cls.__random_forest_negative_score)
                     cls.__random_forest_candidate_score_list.append(candidate_score)
                 elif Constant.SVM in class_report.keys():
                     print('svm')
                     cls.__svm_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__svm_positive_score += positive_score
+                    cls.__svm_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__svm_positive_score, cls.__svm_negative_score)
                     cls.__svm_score_candidate_score_list.append(candidate_score)
                 elif Constant.LINEAR_REGRESSION in class_report.keys():
                     print('linear regression')
                     cls.__linear_regression_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__linear_regression_positive_score += positive_score
+                    cls.__linear_regression_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__linear_regression_positive_score,
+                                                       cls.__linear_regression_negative_score)
                     cls.__linear_regression_candidate_score_list.append(candidate_score)
                 elif Constant.LINEAR_REGRESSION_ELASTIC in class_report.keys():
                     print('linear regression elastic')
                     cls.__linear_regression_ridge_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__linear_regression_ridge_positive_score += positive_score
+                    cls.__linear_regression_ridge_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__linear_regression_ridge_positive_score,
+                                                       cls.__linear_regression_ridge_negative_score)
                     cls.__linear_regression_ridge_candidate_score_list.append(candidate_score)
                 elif Constant.LINEAR_REGRESSION_LASSO in class_report.keys():
                     print('linear regressio lasso')
                     cls.__linear_regression_lasso_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__linear_regression_lasso_positive_score += positive_score
+                    cls.__linear_regression_lasso_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__linear_regression_lasso_positive_score,
+                                                       cls.__linear_regression_lasso_negative_score)
                     cls.__linear_regression_lasso_candidate_score_list.append(candidate_score)
                 elif Constant.LINEAR_REGRESSION_RIDGE in class_report.keys():
                     print('linear regressio ridge')
                     cls.__linear_regression_ridge_score_list.append(class_report[Constant.WEIGHTED_AVG])
+                    cls.__linear_regression_ridge_positive_score += positive_score
+                    cls.__linear_regression_ridge_negative_score += negative_score
+                    candidate_score = super().aprf_run(cls.__linear_regression_ridge_positive_score,
+                                                       cls.__linear_regression_ridge_negative_score)
                     cls.__linear_regression_ridge_candidate_score_list.append(candidate_score)
                 else:
                     print('wrong ML')
@@ -414,10 +582,10 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
         class_report[Constant.K_MEANS] = Constant.K_MEANS
         class_report_list.append([class_report])
 
-        # class_report = \
-        #     cls.__dnn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-        # class_report[Constant.DNN] = Constant.DNN
-        # class_report_list.append([class_report])
+        class_report = \
+            cls.__dnn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        class_report[Constant.DNN] = Constant.DNN
+        class_report_list.append([class_report])
 
         class_report = \
             cls.__logistic_regression(training_feature_array, training_label_array, testing_feature_array,
@@ -482,11 +650,7 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
         class_report[Constant.AGGLOMERATIVE_CLUSTERING] = Constant.AGGLOMERATIVE_CLUSTERING
         class_report_list.append([class_report])
 
-        for i in class_report_list:
-            for j in i:
-                print(j)
-
-        # cls.__calculate_scores(class_report_list)
+        cls.__calculate_scores(class_report_list)
 
     @classmethod
     def __calculate_total_candidate_score(cls):
@@ -549,7 +713,6 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
         total_score_list.append(score_list)
 
         total_score_list = sorted(total_score_list, key=lambda a: a[0], reverse=True)
-
         return total_score_list[0][0], total_score_list[0][1]
 
     @classmethod
@@ -563,16 +726,19 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
 
     @classmethod
     def ensemble_run(cls, training_feature_array, training_label_array, testing_feature_array, testing_label_array):
-        for i in range(0, 1):
+        score_list = []
+        for count in range(0, 5):
             cls.__get_best_ml(training_feature_array, training_label_array, testing_feature_array,
                               testing_label_array)
             best_score, best_ml = cls.__calculate_total_candidate_score()
-            print('--------------------------')
-            print(best_score, best_ml)
+            score_list.append([best_score, best_ml])
 
-        cls.__negative_score = 0
-        cls.__positive_score = 0
+        print('-----------------------------------')
+        for index, score in enumerate(score_list):
+            print(index, score)
+        print('-----------------------------------')
 
+        cls.__init_all_variables()
         cls.__save_scores(cls.__ada_boost_score_list, Constant.OUTPUT_DIR + '/' + Constant.ADA_BOOST + '_score.csv')
         cls.__save_scores(cls.__agglomerative_clustering_score_list, Constant.OUTPUT_DIR + '/' +
                           Constant.AGGLOMERATIVE_CLUSTERING + '_score.csv')
