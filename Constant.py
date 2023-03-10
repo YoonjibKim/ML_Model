@@ -34,13 +34,13 @@ TESTING_NORMAL = 'testing_normal_feature.csv'
 TRAINING_ATTACK = 'training_attack_feature.csv'
 TRAINING_NORMAL = 'training_normal_feature.csv'
 
-EXTENDED_TOP_DATASET_PATH = 'Final_dataset/TOP/Extend'
-CUT_TOP_DATASET_PATH = 'Final_dataset/TOP/Cut'
+CS_EXTENDED_TOP_DATASET_PATH = 'Final_CS_Dataset/TOP/Extend'
+CS_CUT_TOP_DATASET_PATH = 'Final_CS_Dataset/TOP/Cut'
 
 FEATURE_EPOCH = 20000
 
-PROCESS_STAT_DATASET_PATH = 'Final_dataset/STAT/Process'
-RAW_STAT_DATASET_PATH = 'Final_dataset/STAT/Raw'
+PROCESS_STAT_DATASET_PATH = 'Final_CS_Dataset/STAT/Process'
+RAW_STAT_DATASET_PATH = 'Final_CS_Dataset/STAT/Raw'
 
 BEFORE_PARSING_DATASET_PATH = 'Before_parsing_dataset/dataset'
 
@@ -75,3 +75,7 @@ SVM = 'svm'
 WEIGHTED_AVG = 'weighted avg'
 F1_SCORE = 'f1-score'
 SUPPORT = 'support'
+
+CYCLE_INDEX = 0
+INSTRUCTIONS_INDEX = 1
+BRANCH_INDEX = 2
