@@ -234,8 +234,34 @@ def cs_implementation():
 
 if __name__ == '__main__':
     print('Simulation Start')
+
     attack_scenario = [Constant.CORRECT_EV_ID, Constant.RANDOM_CS_ON, Constant.GAUSSIAN_OFF]
     gs_implementation = GS_Implementation(attack_scenario)
-    gs_implementation.feature_analysis()
+    # gs_implementation.top_feature_analysis()
+
+    # training_feature_array, training_label_array, testing_feature_array, \
+    #     testing_label_array = gs_implementation.get_top_cycle_feature_array()
+
+    # training_feature_array, training_label_array, testing_feature_array, \
+    #     testing_label_array = gs_implementation.get_top_instructions_feature_array()
+
+    # training_feature_array, training_label_array, testing_feature_array, \
+    #     testing_label_array = gs_implementation.get_top_branch_feature_array()
+
+    gs_implementation.stat_feature_analysis()
+
+    # Consensus.ensemble_run(training_feature_array, training_label_array,
+    #                        testing_feature_array, testing_label_array)
+    #
+    # ret_normal_count, ret_attack_count = calculate_feature_size(training_label_array)
+    # print('training normal count: ', ret_normal_count)
+    # print('training attack count: ', ret_attack_count)
+    # print('training feature dimension: ', training_feature_array.shape[1])
+    # print('training total count: ', training_feature_array.shape[0])
+    # ret_normal_count, ret_attack_count = calculate_feature_size(testing_label_array)
+    # print('testing normal count: ', ret_normal_count)
+    # print('testing attack count: ', ret_attack_count)
+    # print('testing feature dimension:', testing_feature_array.shape[1])
+    # print('testing total count: ', testing_feature_array.shape[0])
 
     print('Simulation End')
