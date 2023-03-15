@@ -1,9 +1,8 @@
 import csv
 import os.path
+import random
 import statistics as st
-
 import numpy as np
-
 import Constant
 from Data_Save import DataSave
 
@@ -724,17 +723,17 @@ class TOP_Feature_Engineering_Cut:
         testing_normal_cut_data_dict = {}
         testing_attack_cut_data_dict = {}
         for symbol in all_intersection_symbol_list:
-            data_list = training_normal_data_dict[symbol][:training_min_size]
-            training_normal_cut_data_dict[symbol] = data_list
+            data_list = random.sample(list(training_normal_data_dict[symbol]), training_min_size)
+            training_normal_cut_data_dict[symbol] = np.array(data_list)
 
-            data_list = training_attack_data_dict[symbol][:training_min_size]
-            training_attack_cut_data_dict[symbol] = data_list
+            data_list = random.sample(list(training_attack_data_dict[symbol]), training_min_size)
+            training_attack_cut_data_dict[symbol] = np.array(data_list)
 
-            data_list = testing_normal_data_dict[symbol][:testing_min_size]
-            testing_normal_cut_data_dict[symbol] = data_list
+            data_list = random.sample(list(testing_normal_data_dict[symbol]), testing_min_size)
+            testing_normal_cut_data_dict[symbol] = np.array(data_list)
 
-            data_list = testing_attack_data_dict[symbol][:testing_min_size]
-            testing_attack_cut_data_dict[symbol] = data_list
+            data_list = random.sample(list(testing_attack_data_dict[symbol]), testing_min_size)
+            testing_attack_cut_data_dict[symbol] = np.array(data_list)
 
         return training_normal_cut_data_dict, training_attack_cut_data_dict, testing_normal_cut_data_dict, \
             testing_attack_cut_data_dict

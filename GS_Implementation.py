@@ -24,15 +24,15 @@ class GS_Implementation(Dataset):
         self.__dataset = super()
         self.__dataset.access_dataset(attack_scenario[0], attack_scenario[1], attack_scenario[2])
 
-    def get_top_cycle_feature_array(self):
+    def get_top_cycle_feature_and_label_array(self):
         return self.__training_top_cycle_feature_array, self.__training_top_cycle_label_array, \
             self.__testing_top_cycle_feature_array, self.__testing_top_cycle_label_array
 
-    def get_top_instructions_feature_array(self):
+    def get_top_instructions_feature_and_label_array(self):
         return self.__training_top_instructions_feature_array, self.__training_top_instructions_label_array, \
             self.__testing_top_instructions_feature_array, self.__testing_top_instructions_label_array
 
-    def get_top_branch_feature_array(self):
+    def get_top_branch_feature_and_label_array(self):
         return self.__training_top_branch_feature_array, self.__training_top_branch_label_array, \
             self.__testing_top_branch_feature_array, self.__testing_top_branch_label_array
 
@@ -162,19 +162,19 @@ class GS_Implementation(Dataset):
             self.__calculate_smallest_feature_size(attack_branch_symbol_dict, normal_branch_symbol_dict)
 
         shrunk_attack_cycle_symbol_dict = \
-            self.__set_feature_size_to_smallest_one_dict(attack_cycle_smallest_size, attack_cycle_symbol_dict)
+            self.set_feature_size_to_smallest_one_dict(attack_cycle_smallest_size, attack_cycle_symbol_dict)
         shrunk_normal_cycle_symbol_dict = \
-            self.__set_feature_size_to_smallest_one_dict(normal_cycle_smallest_size, normal_cycle_symbol_dict)
+            self.set_feature_size_to_smallest_one_dict(normal_cycle_smallest_size, normal_cycle_symbol_dict)
         shrunk_attack_instructions_symbol_dict = \
-            self.__set_feature_size_to_smallest_one_dict(attack_instructions_smallest_size,
-                                                         attack_instructions_symbol_dict)
+            self.set_feature_size_to_smallest_one_dict(attack_instructions_smallest_size,
+                                                       attack_instructions_symbol_dict)
         shrunk_normal_instructions_symbol_dict = \
-            self.__set_feature_size_to_smallest_one_dict(normal_instructions_smallest_size,
-                                                         normal_instructions_symbol_dict)
+            self.set_feature_size_to_smallest_one_dict(normal_instructions_smallest_size,
+                                                       normal_instructions_symbol_dict)
         shrunk_attack_branch_symbol_dict = \
-            self.__set_feature_size_to_smallest_one_dict(attack_branch_smallest_size, attack_branch_symbol_dict)
+            self.set_feature_size_to_smallest_one_dict(attack_branch_smallest_size, attack_branch_symbol_dict)
         shrunk_normal_branch_symbol_dict = \
-            self.__set_feature_size_to_smallest_one_dict(normal_branch_smallest_size, normal_branch_symbol_dict)
+            self.set_feature_size_to_smallest_one_dict(normal_branch_smallest_size, normal_branch_symbol_dict)
 
         self.__training_top_cycle_feature_array, self.__training_top_cycle_label_array, \
             self.__testing_top_cycle_feature_array, self.__testing_top_cycle_label_array = \
@@ -236,7 +236,7 @@ class GS_Implementation(Dataset):
         return training_feature_array, training_label_array, testing_feature_array, testing_label_array
 
     @classmethod
-    def __set_feature_size_to_smallest_one_dict(cls, smallest_size, symbol_dict):
+    def set_feature_size_to_smallest_one_dict(cls, smallest_size, symbol_dict):
         shrunk_symbol_dict = {}
 
         for feature_name, symbol_list in symbol_dict.items():

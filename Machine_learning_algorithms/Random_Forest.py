@@ -16,6 +16,6 @@ class Random_Forest:
 
         pred_rf = clf_rf.predict(X_te_std)
 
-        class_report = classification_report(y_te, pred_rf, output_dict=True)
+        class_report = classification_report(y_te, pred_rf, output_dict=True, zero_division=0)
 
         return class_report

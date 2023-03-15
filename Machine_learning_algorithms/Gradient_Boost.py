@@ -16,6 +16,6 @@ class Gradient_Boost:
 
         pred_gboost = clf_gbt.predict(X_te_std)
 
-        class_report = classification_report(y_te, pred_gboost, output_dict=True)
+        class_report = classification_report(y_te, pred_gboost, output_dict=True, zero_division=0)
 
         return class_report

@@ -580,10 +580,10 @@ class Consensus(KNN, K_Means, DNN, Logistic_Regression, Gaussian_NB, Linear_Regr
         class_report[Constant.K_MEANS] = Constant.K_MEANS
         class_report_list.append([class_report])
 
-        class_report = \
-            cls.__dnn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
-        class_report[Constant.DNN] = Constant.DNN
-        class_report_list.append([class_report])
+        # class_report = \
+        #     cls.__dnn(training_feature_array, training_label_array, testing_feature_array, testing_label_array)
+        # class_report[Constant.DNN] = Constant.DNN
+        # class_report_list.append([class_report])
 
         class_report = \
             cls.__logistic_regression(training_feature_array, training_label_array, testing_feature_array,

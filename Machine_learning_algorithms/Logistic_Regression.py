@@ -17,6 +17,6 @@ class Logistic_Regression:
 
         pred_logistic = clf_logi_l2.predict(X_te_std)
 
-        class_report = classification_report(testing_label_array, pred_logistic, output_dict=True)
+        class_report = classification_report(testing_label_array, pred_logistic, output_dict=True, zero_division=0)
 
         return class_report

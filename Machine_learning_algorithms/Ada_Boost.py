@@ -16,6 +16,6 @@ class Ada_Boost:
 
         pred_ada = clf_ada.predict(X_te_std)
 
-        class_report = classification_report(y_te, pred_ada, output_dict=True)
+        class_report = classification_report(y_te, pred_ada, output_dict=True, zero_division=0)
 
         return class_report

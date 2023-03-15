@@ -16,6 +16,6 @@ class Decision_Tree:
 
         pred_tree = clf_tree.predict(X_te_std)
 
-        class_report = classification_report(y_te, pred_tree, output_dict=True)
+        class_report = classification_report(y_te, pred_tree, output_dict=True, zero_division=0)
 
         return class_report

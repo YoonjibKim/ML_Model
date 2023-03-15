@@ -31,7 +31,7 @@ class DNN:
         model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
         model.fit(X_tn, y_tn, epochs=epo, batch_size=5)
 
-        pred_x = model.predict(X_te)
+        pred_x = model(X_te)  # predict
 
         temp_predict_array = np.asarray(np.round(pred_x), dtype=int)
         temp_predict_list = []

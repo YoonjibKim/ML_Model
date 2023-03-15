@@ -17,6 +17,6 @@ class Gaussian_NB:
 
         pred_gnb = clf_gnb.predict(X_te_std)
 
-        class_report = classification_report(testing_label_array, pred_gnb, output_dict=True)
+        class_report = classification_report(testing_label_array, pred_gnb, output_dict=True, zero_division=0)
 
         return class_report

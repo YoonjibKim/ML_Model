@@ -1,52 +1,10 @@
+import math
+import random
 import numpy as np
 import Constant
 
 
 class Combined_Feature_Engineering:
-    @classmethod
-    def __get_stat_and_time_diff_combined_features(cls, first_mixed_list, second_mixed_list):
-
-        first_list_size = len(first_mixed_list)
-        second_list_size = len(second_mixed_list)
-        large_list = None
-        small_list = None
-        diff_size = None
-        flag_1 = False
-        flag_2 = False
-        first_list = None
-        second_list = None
-
-        if first_list_size > second_list_size:
-            diff_size = first_list_size - second_list_size
-            large_list = first_mixed_list
-            small_list = second_mixed_list
-            flag_1 = True
-        elif first_list_size < second_list_size:
-            diff_size = second_list_size - first_list_size
-            large_list = second_mixed_list
-            small_list = first_mixed_list
-            flag_2 = True
-        else:
-            first_list = first_mixed_list
-            second_list = second_mixed_list
-
-        if flag_1 or flag_2:
-            large_list_size = len(large_list)
-            list_ratio = large_list_size / diff_size
-            round_ratio = round(list_ratio)
-            if round_ratio == 1:
-                round_ratio = 2
-            del large_list[::round_ratio]
-
-            if flag_1:
-                first_list = large_list
-                second_list = small_list
-            else:
-                first_list = small_list
-                second_list = large_list
-
-        return first_list, second_list
-
     @classmethod
     def divide_attack_and_normal_features(cls, mixed_list):
         attack_list = []
@@ -61,16 +19,70 @@ class Combined_Feature_Engineering:
 
         return attack_list, normal_list
 
-    def make_same_feature_length(self, first_feature_list, second_feature_list):
-        while True:
-            small_list, large_list = self.__get_stat_and_time_diff_combined_features(first_feature_list,
-                                                                                     second_feature_list)
-            small_list_size = len(small_list)
-            large_list_size = len(large_list)
-            if small_list_size == large_list_size:
-                temp_first_feature_list = small_list
-                temp_second_feature_list = large_list
-                break
+    @classmethod
+    def make_same_feature_length(cls, first_feature_list, second_feature_list):
+        first_len = len(first_feature_list)
+        second_len = len(second_feature_list)
+        temp_first_feature_list = None
+        temp_second_feature_list = None
+        same_size_flag = True
+        largest_size = 0
+        smallest_size = 0
+        largest_list = None
+        smallest_list = None
+        first_flag = False
+
+        if first_len > second_len:
+            smallest_size = second_len
+            largest_size = first_len
+            largest_list = first_feature_list
+            smallest_list = second_feature_list
+            first_flag = True
+        elif first_len < second_len:
+            smallest_size = first_len
+            largest_size = second_len
+            largest_list = second_feature_list
+            smallest_list = first_feature_list
+        else:
+            temp_first_feature_list = first_feature_list
+            temp_second_feature_list = second_feature_list
+            same_size_flag = False
+
+        if same_size_flag:
+            result = largest_size / smallest_size
+            quotient = math.floor(result)
+            remainder = result - quotient
+            total_remainder = 0
+            index = 0
+            chosen_data_list = []
+
+            while index < largest_size:
+                if index % quotient == 0:
+                    if total_remainder > quotient:
+                        chosen_data_list.append(largest_list[index])
+                        index += quotient
+                        total_remainder = total_remainder - quotient
+                    else:
+                        total_remainder += remainder
+                        chosen_data_list.append(largest_list[index])
+
+                index += 1
+
+            shrunk_index_size = len(chosen_data_list)
+            index_list = list(index for index in range(0, shrunk_index_size))
+            random_index_list = random.sample(index_list, smallest_size)
+            random_index_list = sorted(random_index_list)
+
+            final_shrunk_list = []
+            for index in random_index_list:
+                final_shrunk_list.append(chosen_data_list[index])
+
+            if first_flag:
+                temp_first_feature_list = final_shrunk_list
+                temp_second_feature_list = smallest_list
+            else:
+                temp_first_feature_list = smallest_list
+                temp_second_feature_list = final_shrunk_list
 
         return temp_first_feature_list, temp_second_feature_list
 
